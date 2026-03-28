@@ -81,9 +81,9 @@ class EpisodeTracker:
         except Exception as e:
             logger.error(f"Error saving episode tracker: {e}")
     
-    def get_state(self, anime_title: str, episode_number: int) -> Optional[EpisodeState]:
+    def get_state(self, drama_title: str, episode_number: int) -> Optional[EpisodeState]:
         with self._lock:
-            ep_id = self._get_episode_id(anime_title, episode_number)
+            ep_id = self._get_episode_id(drama_title, episode_number)
             ep_data = self.episodes.get(ep_id)
             if ep_data:
                 try:
@@ -92,40 +92,40 @@ class EpisodeTracker:
                     return None
             return None
     
-    def can_process(self, anime_title: str, episode_number: int) -> bool:
+    def can_process(self, drama_title: str, episode_number: int) -> bool:
         with self._lock:
-            state = self.get_state(anime_title, episode_number)
+            state = self.get_state(drama_title, episode_number)
             if state is None:
                 return True
             return state == EpisodeState.PENDING
     
-    def is_posted(self, anime_title: str, episode_number: int) -> bool:
+    def is_posted(self, drama_title: str, episode_number: int) -> bool:
         with self._lock:
-            state = self.get_state(anime_title, episode_number)
+            state = self.get_state(drama_title, episode_number)
             return state == EpisodeState.POSTED
     
-    def is_processing(self, anime_title: str, episode_number: int) -> bool:
+    def is_processing(self, drama_title: str, episode_number: int) -> bool:
         with self._lock:
-            state = self.get_state(anime_title, episode_number)
+            state = self.get_state(drama_title, episode_number)
             return state == EpisodeState.PROCESSING
     
-    def is_completed_or_posted(self, anime_title: str, episode_number: int) -> bool:
+    def is_completed_or_posted(self, drama_title: str, episode_number: int) -> bool:
         with self._lock:
-            state = self.get_state(anime_title, episode_number)
+            state = self.get_state(drama_title, episode_number)
             return state in (EpisodeState.COMPLETED, EpisodeState.POSTED)
     
-    def try_start_processing(self, anime_title: str, episode_number: int) -> bool:
+    def try_start_processing(self, drama_title: str, episode_number: int) -> bool:
         with self._lock:
-            ep_id = self._get_episode_id(anime_title, episode_number)
+            ep_id = self._get_episode_id(drama_title, episode_number)
             
-            current_state = self.get_state(anime_title, episode_number)
+            current_state = self.get_state(drama_title, episode_number)
             
             if current_state is not None and current_state != EpisodeState.PENDING:
                 logger.info(f"Episode {ep_id} cannot start processing: current state is {current_state.value}")
                 return False
 
             self.episodes[ep_id] = {
-                'drama_title': anime_title,
+                'drama_title': drama_title,
                 'episode_number': episode_number,
                 'state': EpisodeState.PROCESSING.value,
                 'started_at': datetime.now().isoformat(),
@@ -136,27 +136,27 @@ class EpisodeTracker:
             logger.info(f"Episode {ep_id} state: -> PROCESSING")
             return True
     
-    def mark_quality_downloaded(self, anime_title: str, episode_number: int, quality: str):
+    def mark_quality_downloaded(self, drama_title: str, episode_number: int, quality: str):
         with self._lock:
-            ep_id = self._get_episode_id(anime_title, episode_number)
+            ep_id = self._get_episode_id(drama_title, episode_number)
             if ep_id in self.episodes:
                 if quality not in self.episodes[ep_id].get('qualities_downloaded', []):
                     self.episodes[ep_id].setdefault('qualities_downloaded', []).append(quality)
                     self._save_tracker()
     
-    def mark_quality_uploaded(self, anime_title: str, episode_number: int, quality: str, msg_id: int):
+    def mark_quality_uploaded(self, drama_title: str, episode_number: int, quality: str, msg_id: int):
         with self._lock:
-            ep_id = self._get_episode_id(anime_title, episode_number)
+            ep_id = self._get_episode_id(drama_title, episode_number)
             if ep_id in self.episodes:
                 uploaded = self.episodes[ep_id].setdefault('qualities_uploaded', [])
                 if not any(q.get('quality') == quality for q in uploaded if isinstance(q, dict)):
                     uploaded.append({'quality': quality, 'msg_id': msg_id})
                     self._save_tracker()
     
-    def mark_completed(self, anime_title: str, episode_number: int) -> bool:
+    def mark_completed(self, drama_title: str, episode_number: int) -> bool:
         with self._lock:
-            ep_id = self._get_episode_id(anime_title, episode_number)
-            current_state = self.get_state(anime_title, episode_number)
+            ep_id = self._get_episode_id(drama_title, episode_number)
+            current_state = self.get_state(drama_title, episode_number)
             
             if current_state != EpisodeState.PROCESSING:
                 logger.warning(f"Episode {ep_id} mark_completed called but state is {current_state}")
@@ -168,10 +168,10 @@ class EpisodeTracker:
             logger.info(f"Episode {ep_id} state: PROCESSING -> COMPLETED")
             return True
     
-    def mark_posted(self, anime_title: str, episode_number: int) -> bool:
+    def mark_posted(self, drama_title: str, episode_number: int) -> bool:
         with self._lock:
-            ep_id = self._get_episode_id(anime_title, episode_number)
-            current_state = self.get_state(anime_title, episode_number)
+            ep_id = self._get_episode_id(drama_title, episode_number)
+            current_state = self.get_state(drama_title, episode_number)
             
             if current_state not in (EpisodeState.COMPLETED, EpisodeState.PROCESSING):
                 logger.warning(f"Episode {ep_id} mark_posted called but state is {current_state}")
@@ -183,10 +183,10 @@ class EpisodeTracker:
             logger.info(f"Episode {ep_id} state: {current_state.value} -> POSTED")
             return True
     
-    def release_processing(self, anime_title: str, episode_number: int, success: bool = False):
+    def release_processing(self, drama_title: str, episode_number: int, success: bool = False):
         with self._lock:
-            ep_id = self._get_episode_id(anime_title, episode_number)
-            current_state = self.get_state(anime_title, episode_number)
+            ep_id = self._get_episode_id(drama_title, episode_number)
+            current_state = self.get_state(drama_title, episode_number)
             
             if current_state != EpisodeState.PROCESSING:
                 return
@@ -261,13 +261,13 @@ class DramaQueue:
         except Exception as e:
             logger.error(f"Error saving queue: {e}")
     
-    def add_to_pending(self, anime_info):
+    def add_to_pending(self, drama_info):
         with self.lock:
-            episode_id = f"{anime_info['title']}_{anime_info['episode']}"
+            episode_id = f"{drama_info['title']}_{drama_info['episode']}"
             if episode_id not in [item['id'] for item in self.pending_queue]:
-                anime_info['id'] = episode_id
-                anime_info['added_time'] = datetime.now().isoformat()
-                self.pending_queue.append(anime_info)
+                drama_info['id'] = episode_id
+                drama_info['added_time'] = datetime.now().isoformat()
+                self.pending_queue.append(drama_info)
                 self.save_queue()
                 logger.info(f"Added {episode_id} to pending queue")
                 return True
@@ -284,14 +284,14 @@ class DramaQueue:
             self.pending_queue = [item for item in self.pending_queue if item['id'] != episode_id]
             self.save_queue()
     
-    def mark_as_processed(self, anime_title, episode_number):
+    def mark_as_processed(self, drama_title, episode_number):
         with self.lock:
-            episode_id = f"{anime_title}_{episode_number}"
+            episode_id = f"{drama_title}_{episode_number}"
             self.processed_episodes.add(episode_id)
             self.save_queue()
     
-    def is_processed(self, anime_title, episode_number):
-        episode_id = f"{anime_title}_{episode_number}"
+    def is_processed(self, drama_title, episode_number):
+        episode_id = f"{drama_title}_{episode_number}"
         return episode_id in self.processed_episodes
     
     def clear_old_entries(self, days=7):

@@ -24,7 +24,7 @@ app = FastAPI()
 async def health_check():
     return JSONResponse(
         status_code=200,
-        content={"status": "healthy", "message": "𝙼𝚊𝚜𝚝𝚎𝚛, 𝚢𝚘𝚞𝚛 𝚜𝚎𝚛𝚟𝚊𝚗𝚝 𝚒𝚜 𝚘𝚗𝚌𝚎 𝚊𝚐𝚊𝚒𝚗 𝚊𝚕𝚒𝚟𝚎.― AɴɪWᴇʙ Bᴏᴛs"}
+        content={"status": "healthy", "message": "𝙼𝚊𝚜𝚝𝚎𝚛, 𝚢𝚘𝚞𝚛 𝚜𝚎𝚛𝚟𝚊𝚗𝚝 𝚒𝚜 𝚘𝚗𝚌𝚎 𝚊𝚐𝚊𝚒𝚗 𝚊𝚕𝚒𝚟𝚎.― Dʀᴀᴍᴀx Bᴏᴛs"}
     )
 
 

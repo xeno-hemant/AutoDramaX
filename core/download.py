@@ -302,17 +302,17 @@ async def robust_upload_file(
     return None
 
 
-async def post_anime_to_dedicated_channel(client, anime_title, anime_info, episode_number, audio_type, quality_files, dedicated_channel_id, dedicated_channel_username):
+async def post_anime_to_dedicated_channel(client, drama_title, drama_info, episode_number, audio_type, quality_files, dedicated_channel_id, dedicated_channel_username):
     from core.database import get_anime_channel
 
     try:
-        anime_id = anime_info.get('id')
+        anime_id = drama_info.get('id')
         if not anime_id:
-            logger.error(f"No anime ID found for {anime_title}")
+            logger.error(f"No drama ID found for {drama_title}")
             return None
         
         banner_url = f"https://img.anili.st/media/{anime_id}"
-        banner_path = os.path.join(THUMBNAIL_DIR, f"{sanitize_filename(anime_title)}_banner_dedicated.jpg")
+        banner_path = os.path.join(THUMBNAIL_DIR, f"{sanitize_filename(drama_title)}_banner_dedicated.jpg")
 
         banner_downloaded = False
         for attempt in range(3):
@@ -334,12 +334,12 @@ async def post_anime_to_dedicated_channel(client, anime_title, anime_info, episo
                 continue
         
         if not banner_downloaded:
-            logger.warning(f"Could not download banner for {anime_title}, will post without image")
+            logger.warning(f"Could not download banner for {drama_title}, will post without image")
         
-        english_title = anime_info.get('title', {}).get('english') or anime_info.get('title', {}).get('romaji')
-        romaji_title = anime_info.get('title', {}).get('romaji')
+        english_title = drama_info.get('title', {}).get('english') or drama_info.get('title', {}).get('romaji')
+        romaji_title = drama_info.get('title', {}).get('romaji')
         
-        hashtag = get_drama_hashtag(anime_title)
+        hashtag = get_drama_hashtag(drama_title)
         
         main_channel_username = (CHANNEL_USERNAME or BOT_USERNAME).lstrip('@')
         
@@ -389,7 +389,7 @@ async def post_anime_to_dedicated_channel(client, anime_title, anime_info, episo
                     buttons=keyboard,
                     link_preview=False
                 )
-            logger.info(f"Posted to dedicated channel for {anime_title}: {target_channel}")
+            logger.info(f"Posted to dedicated channel for {drama_title}: {target_channel}")
         except Exception as e:
             logger.error(f"Error posting to dedicated channel: {e}")
             return None
@@ -434,12 +434,12 @@ async def post_anime_to_dedicated_channel(client, anime_title, anime_info, episo
                         buttons=main_keyboard if main_keyboard else None,
                         link_preview=False
                     )
-                logger.info(f"Sent notification to main channel for {anime_title}")
+                logger.info(f"Sent notification to main channel for {drama_title}")
             except Exception as e:
                 logger.error(f"Error sending notification to main channel: {e}")
 
         
-        mark_banner_posted(anime_title)
+        mark_banner_posted(drama_title)
         return dedicated_msg
     
     except Exception as e:
@@ -454,10 +454,10 @@ async def post_anime_to_dedicated_channel(client, anime_title, anime_info, episo
 
 
 
-async def _post_fallback_message(client, anime_title, episode_number, audio_type, quality_files):
+async def _post_fallback_message(client, drama_title, episode_number, audio_type, quality_files):
     try:
         main_channel_username = (CHANNEL_USERNAME or BOT_USERNAME).lstrip('@')
-        hashtag = get_drama_hashtag(anime_title)
+        hashtag = get_drama_hashtag(drama_title)
         qualities_str = " | ".join(quality_files.keys()) if quality_files else "N/A"
         
         caption = (
@@ -498,8 +498,8 @@ async def _post_fallback_message(client, anime_title, episode_number, audio_type
                 buttons=keyboard,
                 link_preview=False
             )
-            logger.info(f"Posted fallback message for {anime_title}")
-            mark_banner_posted(anime_title)
+            logger.info(f"Posted fallback message for {drama_title}")
+            mark_banner_posted(drama_title)
             return msg
         else:
             logger.error("No channel configured for fallback message")
@@ -512,17 +512,17 @@ async def _post_fallback_message(client, anime_title, episode_number, audio_type
         return None
 
 
-async def post_anime_with_buttons(client, anime_title, anime_info, episode_number, audio_type, quality_files):
+async def post_drama_with_buttons(client, drama_title, drama_info, episode_number, audio_type, quality_files):
     from core.database import get_anime_channel
     
     try:
         try:
-            anime_channel = await get_anime_channel(anime_title)
+            anime_channel = await get_anime_channel(drama_title)
             if anime_channel:
                 dedicated_channel_id = anime_channel.get('channel_id')
                 dedicated_channel_username = anime_channel.get('channel_username')
                 return await post_anime_to_dedicated_channel(
-                    client, anime_title, anime_info, episode_number, audio_type, 
+                    client, drama_title, drama_info, episode_number, audio_type, 
                     quality_files, dedicated_channel_id, dedicated_channel_username
                 )
         except Exception as e:
@@ -532,20 +532,20 @@ async def post_anime_with_buttons(client, anime_title, anime_info, episode_numbe
             logger.warning("No main channel configured. Banner not posted.")
             return None
         
-        if not anime_info:
-            logger.warning(f"No anime info available for {anime_title}, posting with fallback")
-            return await _post_fallback_message(client, anime_title, episode_number, audio_type, quality_files)
+        if not drama_info:
+            logger.warning(f"No drama info available for {drama_title}, posting with fallback")
+            return await _post_fallback_message(client, drama_title, episode_number, audio_type, quality_files)
         
-        anime_id = anime_info.get('id')
+        anime_id = drama_info.get('id')
         if not anime_id:
-            logger.warning(f"No anime ID found for {anime_title}, posting with fallback")
-            return await _post_fallback_message(client, anime_title, episode_number, audio_type, quality_files)
+            logger.warning(f"No drama ID found for {drama_title}, posting with fallback")
+            return await _post_fallback_message(client, drama_title, episode_number, audio_type, quality_files)
     except Exception as e:
-        logger.error(f"Error in post_anime_with_buttons setup: {e}")
+        logger.error(f"Error in post_drama_with_buttons setup: {e}")
         import traceback
         logger.error(traceback.format_exc())
         try:
-            return await _post_fallback_message(client, anime_title, episode_number, audio_type, quality_files)
+            return await _post_fallback_message(client, drama_title, episode_number, audio_type, quality_files)
         except Exception as fallback_error:
             logger.error(f"Fallback posting also failed: {fallback_error}")
             return None
@@ -554,7 +554,7 @@ async def post_anime_with_buttons(client, anime_title, anime_info, episode_numbe
     try:
         banner_url = f"https://img.anili.st/media/{anime_id}"
         
-        banner_path = os.path.join(THUMBNAIL_DIR, f"{sanitize_filename(anime_title)}_banner.jpg")
+        banner_path = os.path.join(THUMBNAIL_DIR, f"{sanitize_filename(drama_title)}_banner.jpg")
         
         banner_downloaded = False
         for attempt in range(3):
@@ -576,13 +576,13 @@ async def post_anime_with_buttons(client, anime_title, anime_info, episode_numbe
                 continue
         
         if not banner_downloaded:
-            logger.warning(f"Could not download banner for {anime_title}, will post without image")
+            logger.warning(f"Could not download banner for {drama_title}, will post without image")
         
-        title_info = anime_info.get('title', {}) or {}
-        english_title = title_info.get('english') or title_info.get('romaji') or anime_title
-        romaji_title = title_info.get('romaji') or anime_title
+        title_info = drama_info.get('title', {}) or {}
+        english_title = title_info.get('english') or title_info.get('romaji') or drama_title
+        romaji_title = title_info.get('romaji') or drama_title
         
-        hashtag = get_drama_hashtag(anime_title)
+        hashtag = get_drama_hashtag(drama_title)
         
         main_channel_username = (CHANNEL_USERNAME or BOT_USERNAME).lstrip('@')
         
@@ -636,7 +636,7 @@ async def post_anime_with_buttons(client, anime_title, anime_info, episode_numbe
                         buttons=keyboard,
                         link_preview=False
                     )
-                logger.info(f"Posted banner with buttons for {anime_title}")
+                logger.info(f"Posted banner with buttons for {drama_title}")
             else:
                 if CHANNEL_ID:
                     msg = await client.send_message(
@@ -654,7 +654,7 @@ async def post_anime_with_buttons(client, anime_title, anime_info, episode_numbe
                         buttons=keyboard,
                         link_preview=False
                     )
-                logger.info(f"Posted text message (no banner) for {anime_title}")
+                logger.info(f"Posted text message (no banner) for {drama_title}")
 
             try:
                 await client.send_message(
@@ -665,7 +665,7 @@ async def post_anime_with_buttons(client, anime_title, anime_info, episode_numbe
             except Exception as e:
                 logger.error(f"Error sending sticker: {e}")
             
-            mark_banner_posted(anime_title)
+            mark_banner_posted(drama_title)
             return msg
             
         except FloodWaitError as e:
@@ -674,7 +674,7 @@ async def post_anime_with_buttons(client, anime_title, anime_info, episode_numbe
             try:
                 target = CHANNEL_ID if CHANNEL_ID else CHANNEL_USERNAME
                 msg = await client.send_message(target, caption, parse_mode='html', buttons=keyboard, link_preview=False)
-                mark_banner_posted(anime_title)
+                mark_banner_posted(drama_title)
                 return msg
             except Exception as retry_error:
                 logger.error(f"Retry after FloodWait failed: {retry_error}")
@@ -686,11 +686,11 @@ async def post_anime_with_buttons(client, anime_title, anime_info, episode_numbe
             return None
             
     except Exception as e:
-        logger.error(f"Critical error in post_anime_with_buttons: {e}")
+        logger.error(f"Critical error in post_drama_with_buttons: {e}")
         import traceback
         logger.error(traceback.format_exc())
         try:
-            return await _post_fallback_message(client, anime_title, episode_number, audio_type, quality_files)
+            return await _post_fallback_message(client, drama_title, episode_number, audio_type, quality_files)
         except:
             return None
     finally:
@@ -851,29 +851,29 @@ async def download_episode(
         return None
 
 
-async def post_anime_batch_with_buttons(client, anime_title, anime_info, quality_files, episode_number=None, audio_type=None):
+async def post_drama_batch_with_buttons(client, drama_title, drama_info, quality_files, episode_number=None, audio_type=None):
     try:
         if not CHANNEL_ID and not CHANNEL_USERNAME:
             logger.warning("No main channel configured. Banner not posted.")
             return None
         
-        if not anime_info:
-            logger.warning(f"No anime info for batch post of {anime_title}")
-            return await _post_batch_fallback(client, anime_title, quality_files)
+        if not drama_info:
+            logger.warning(f"No drama info for batch post of {drama_title}")
+            return await _post_batch_fallback(client, drama_title, quality_files)
         
-        anime_id = anime_info.get('id')
+        anime_id = drama_info.get('id')
         if not anime_id:
-            logger.warning(f"No anime ID found for {anime_title}")
-            return await _post_batch_fallback(client, anime_title, quality_files)
+            logger.warning(f"No drama ID found for {drama_title}")
+            return await _post_batch_fallback(client, drama_title, quality_files)
     except Exception as e:
-        logger.error(f"Error in post_anime_batch_with_buttons setup: {e}")
+        logger.error(f"Error in post_drama_batch_with_buttons setup: {e}")
         return None
     
     banner_path = None
     try:
         banner_url = f"https://img.anili.st/media/{anime_id}"
         
-        banner_path = os.path.join(THUMBNAIL_DIR, f"{sanitize_filename(anime_title)}_banner.jpg")
+        banner_path = os.path.join(THUMBNAIL_DIR, f"{sanitize_filename(drama_title)}_banner.jpg")
         
         banner_downloaded = False
         for attempt in range(3):
@@ -895,13 +895,13 @@ async def post_anime_batch_with_buttons(client, anime_title, anime_info, quality
                 continue
         
         if not banner_downloaded:
-            logger.warning(f"Could not download banner for {anime_title}, will post without image")
+            logger.warning(f"Could not download banner for {drama_title}, will post without image")
 
-        title_info = anime_info.get('title', {}) or {}
-        english_title = title_info.get('english') or title_info.get('romaji') or anime_title
-        romaji_title = title_info.get('romaji') or anime_title
+        title_info = drama_info.get('title', {}) or {}
+        english_title = title_info.get('english') or title_info.get('romaji') or drama_title
+        romaji_title = title_info.get('romaji') or drama_title
         
-        hashtag = get_drama_hashtag(anime_title)
+        hashtag = get_drama_hashtag(drama_title)
         
         main_channel_username = (CHANNEL_USERNAME or BOT_USERNAME).lstrip('@')
         total_episodes = 0
@@ -960,7 +960,7 @@ async def post_anime_batch_with_buttons(client, anime_title, anime_info, quality
                         buttons=keyboard,
                         link_preview=False
                     )
-                logger.info(f"Posted batch banner with buttons for {anime_title}")
+                logger.info(f"Posted batch banner with buttons for {drama_title}")
             else:
                 if CHANNEL_ID:
                     msg = await client.send_message(
@@ -978,7 +978,7 @@ async def post_anime_batch_with_buttons(client, anime_title, anime_info, quality
                         buttons=keyboard,
                         link_preview=False
                     )
-                logger.info(f"Posted batch text message (no banner) for {anime_title}")
+                logger.info(f"Posted batch text message (no banner) for {drama_title}")
             
             try:
                 await client.send_message(
@@ -989,7 +989,7 @@ async def post_anime_batch_with_buttons(client, anime_title, anime_info, quality
             except Exception as e:
                 logger.error(f"Error sending sticker: {e}")
             
-            mark_banner_posted(anime_title)
+            mark_banner_posted(drama_title)
             return msg
             
         except FloodWaitError as e:
@@ -998,7 +998,7 @@ async def post_anime_batch_with_buttons(client, anime_title, anime_info, quality
             try:
                 target = CHANNEL_ID if CHANNEL_ID else CHANNEL_USERNAME
                 msg = await client.send_message(target, caption, parse_mode='html', buttons=keyboard, link_preview=False)
-                mark_banner_posted(anime_title)
+                mark_banner_posted(drama_title)
                 return msg
             except Exception as retry_error:
                 logger.error(f"Retry after FloodWait failed: {retry_error}")
@@ -1010,7 +1010,7 @@ async def post_anime_batch_with_buttons(client, anime_title, anime_info, quality
             return None
             
     except Exception as e:
-        logger.error(f"Critical error in post_anime_batch_with_buttons: {e}")
+        logger.error(f"Critical error in post_drama_batch_with_buttons: {e}")
         import traceback
         logger.error(traceback.format_exc())
         return None
@@ -1022,10 +1022,10 @@ async def post_anime_batch_with_buttons(client, anime_title, anime_info, quality
             pass
 
 
-async def _post_batch_fallback(client, anime_title, quality_files, episode_number=None, audio_type=None):
+async def _post_batch_fallback(client, drama_title, quality_files, episode_number=None, audio_type=None):
     try:
         main_channel_username = (CHANNEL_USERNAME or BOT_USERNAME).lstrip('@')
-        hashtag = get_drama_hashtag(anime_title)
+        hashtag = get_drama_hashtag(drama_title)
         
         total_episodes = 0
         if quality_files:
@@ -1069,7 +1069,7 @@ async def _post_batch_fallback(client, anime_title, quality_files, episode_numbe
         target = CHANNEL_ID if CHANNEL_ID else CHANNEL_USERNAME
         if target:
             msg = await client.send_message(target, caption, parse_mode='html', buttons=keyboard, link_preview=False)
-            mark_banner_posted(anime_title)
+            mark_banner_posted(drama_title)
             return msg
         return None
         
@@ -1079,14 +1079,14 @@ async def _post_batch_fallback(client, anime_title, quality_files, episode_numbe
 
 
 
-async def download_anime_batch(event, anime_session, anime_title):
-    logger.info(f"Starting batch download for {anime_title}")
+async def download_anime_batch(event, drama_session, drama_title):
+    logger.info(f"Starting batch download for {drama_title}")
     channel_format = (CHANNEL_USERNAME or BOT_USERNAME).lstrip('@')
     try:
         progress = ProgressMessage(client, event.chat_id,
             f"<blockquote><b>✦ 𝗙𝗘𝗧𝗖𝗛𝗜𝗡𝗚 𝗘𝗣𝗜𝗦𝗢𝗗𝗘𝗦 ✦</blockquote>\n"
             f"──────────────────\n"
-            f"<blockquote>・ Aɴɪᴍᴇ: {anime_title}\n"
+            f"<blockquote>・ Dʀᴀᴍᴀ: {drama_title}\n"
             f"・ Sᴛᴀᴛᴜs: ᴘʀᴏᴄᴇssɪɴɢ</blockquote>\n"
             f"──────────────────\n"
             f"<blockquote>≡ ᴘᴏᴡᴇʀᴇᴅ ʙʏ: <a href='t.me/{channel_format}'>{CHANNEL_NAME}</a></blockquote></b>",
@@ -1099,20 +1099,20 @@ async def download_anime_batch(event, anime_session, anime_title):
         await progress.update(
             f"<blockquote><b>✦ 𝗙𝗘𝗧𝗖𝗛𝗜𝗡𝗚 𝗘𝗣𝗜𝗦𝗢𝗗𝗘𝗦 ✦</blockquote>\n"
             f"──────────────────\n"
-            f"<blockquote>・ Aɴɪᴍᴇ: {anime_title}\n"
+            f"<blockquote>・ Dʀᴀᴍᴀ: {drama_title}\n"
             f"・ Sᴛᴀᴛᴜs: ᴘʀᴏᴄᴇssɪɴɢ</blockquote>\n"
             f"──────────────────\n"
             f"<blockquote>≡ ᴘᴏᴡᴇʀᴇᴅ ʙʏ: <a href='t.me/{channel_format}'>{CHANNEL_NAME}</a></blockquote></b>",
             parse_mode='html'
         )
-        episodes = await get_all_episodes(anime_session)
+        episodes = await get_episode_list(drama_session)
         if not episodes:
-            logger.error(f"Failed to get episode list for {anime_title}")
+            logger.error(f"Failed to get episode list for {drama_title}")
             await progress.update("<blockquote><b>ғᴀɪʟᴇᴅ ᴛᴏ ɢᴇᴛ ᴇᴘɪsᴏᴅᴇ ʟɪsᴛ</b><blockquote>", parse_mode='html')
             return False
         
         total_episodes = len(episodes)
-        logger.info(f"Found {total_episodes} episodes for {anime_title}")
+        logger.info(f"Found {total_episodes} episodes for {drama_title}")
         
         enabled_qualities = quality_settings.enabled_qualities
         sorted_qualities = sorted(enabled_qualities, key=lambda x: int(x[:-1]))
@@ -1127,7 +1127,7 @@ async def download_anime_batch(event, anime_session, anime_title):
             await progress.update(
                 f"<blockquote><b>✦ 𝗗𝗢𝗪𝗡𝗟𝗢𝗔𝗗𝗜𝗡𝗚 ✦</blockquote>\n"
                 f"──────────────────\n"
-                f"<blockquote>・ Aɴɪᴍᴇ: {anime_title}\n"
+                f"<blockquote>・ Dʀᴀᴍᴀ: {drama_title}\n"
                 f"・ Tᴏᴛᴀʟ ᴇᴘɪsᴏᴅᴇs: {total_episodes}\n"
                 f"・ Qᴜᴀʟɪᴛʏ: {quality} ({quality_progress}/{total_qualities})</blockquote>\n"
                 f"──────────────────\n"
@@ -1143,7 +1143,7 @@ async def download_anime_batch(event, anime_session, anime_title):
                 await progress.update(
                     f"<blockquote><b>✦ 𝗗𝗢𝗪𝗡𝗟𝗢𝗔𝗗𝗜𝗡𝗚 ✦</blockquote>\n"
                     f"──────────────────\n"
-                    f"<blockquote>・ Aɴɪᴍᴇ: {anime_title}\n"
+                    f"<blockquote>・ Dʀᴀᴍᴀ: {drama_title}\n"
                     f"・ Eᴘɪsᴏᴅᴇ: {episode_number} - {episode_title} | ({ep_idx+1}/{total_episodes})\n"
                     f"・ Qᴜᴀʟɪᴛʏ: {quality} ({quality_progress}/{total_qualities})</blockquote>\n"
                     f"──────────────────\n"
@@ -1151,9 +1151,9 @@ async def download_anime_batch(event, anime_session, anime_title):
                     parse_mode="html"
                 )
                 
-                download_links = get_download_links(anime_session, episode_session)
+                download_links = get_download_links(drama_session, episode_session)
                 if not download_links:
-                    logger.error(f"No download links found for {anime_title} Episode {episode_number}")
+                    logger.error(f"No download links found for {drama_title} Episode {episode_number}")
                     continue
                 
                 is_dub = any('eng' in link['text'].lower() for link in download_links)
@@ -1166,10 +1166,10 @@ async def download_anime_batch(event, anime_session, anime_title):
                         break
                 
                 if not quality_link:
-                    logger.error(f"Quality {quality} not found for {anime_title} Episode {episode_number}")
+                    logger.error(f"Quality {quality} not found for {drama_title} Episode {episode_number}")
                     continue
 
-                base_name = format_filename(anime_title, episode_number, quality, audio_type)
+                base_name = format_filename(drama_title, episode_number, quality, audio_type)
                 main_channel_username = CHANNEL_USERNAME if CHANNEL_USERNAME else BOT_USERNAME
                 full_caption = f"**{base_name} {main_channel_username}.mkv**"
                 filename = sanitize_filename(full_caption)
@@ -1204,7 +1204,7 @@ async def download_anime_batch(event, anime_session, anime_title):
                         continue
 
                     if FFMPEG_AVAILABLE:
-                        final_path = os.path.join(DOWNLOAD_DIR, f"[E{episode_number:02d}] {anime_title} [{quality}].mkv")
+                        final_path = os.path.join(DOWNLOAD_DIR, f"[E{episode_number:02d}] {drama_title} [{quality}].mkv")
                         if await rename_video_with_ffmpeg(download_path, final_path):
                             os.remove(download_path)
                             download_path = final_path
@@ -1265,7 +1265,7 @@ async def download_anime_batch(event, anime_session, anime_title):
                         if dump_msg_id:
                             quality_files[quality].append(dump_msg_id)
                         
-                        logger.info(f"Successfully uploaded {anime_title} Episode {episode_number} {quality}")
+                        logger.info(f"Successfully uploaded {drama_title} Episode {episode_number} {quality}")
                         
                     except FloodWaitError as e:
                         logger.error(f"Flood wait error: {e.seconds} seconds")
@@ -1283,17 +1283,17 @@ async def download_anime_batch(event, anime_session, anime_title):
         
         for episode in episodes:
             episode_number = episode['episode']
-            mark_episode_processed(anime_title, episode_number, sorted_qualities)
+            mark_episode_processed(drama_title, episode_number, sorted_qualities)
         
         if quality_files and any(quality_files.values()):
-            anime_info = await get_anime_info(anime_title)
-            if anime_info:
-                await post_anime_batch_with_buttons(client, anime_title, anime_info, quality_files)
+            drama_info = await get_drama_info(drama_title)
+            if drama_info:
+                await post_drama_batch_with_buttons(client, drama_title, drama_info, quality_files)
         
         await progress.update(
             f"<blockquote><b>✦ 𝗗𝗢𝗪𝗡𝗟𝗢𝗔𝗗 𝗖𝗢𝗠𝗣𝗟𝗘𝗧𝗘𝗗 ✦</blockquote>\n"
             f"──────────────────\n"
-            f"<blockquote>・ Aɴɪᴍᴇ: {anime_title}\n"
+            f"<blockquote>・ Dʀᴀᴍᴀ: {drama_title}\n"
             f"・ Sᴛᴀᴛᴜs: ᴄᴏᴍᴘʟᴇᴛᴇᴅ</blockquote>\n"
             f"──────────────────\n"
             f"<blockquote>≡ ᴘᴏᴡᴇʀᴇᴅ ʙʏ: <a href='t.me/{channel_format}'>{CHANNEL_NAME}</a></blockquote></b>",
@@ -1302,19 +1302,19 @@ async def download_anime_batch(event, anime_session, anime_title):
         return True
     
     except Exception as e:
-        logger.error(f"Error in batch download for {anime_title}: {e}")
+        logger.error(f"Error in batch download for {drama_title}: {e}")
         await safe_respond(event, f"<blockquote><b>ᴇʀʀᴏʀ ɪɴ ʙᴀᴛᴄʜ ᴅᴏᴡɴʟᴏᴀᴅ:</b> {str(e)}</blockquote>", parse_mode='html')
         return False
 
 
 
-async def download_episode(event, anime_title, anime_session, episode_number, episode_session, quality_link):
+async def download_episode(event, drama_title, drama_session, episode_number, episode_session, quality_link):
     user_id = event.chat_id
     
     channel_format = (CHANNEL_USERNAME or BOT_USERNAME).lstrip('@')
     
     
-    progress = ProgressMessage(client, user_id, f"<blockquote><b>✦ 𝗗𝗢𝗪𝗡𝗟𝗢𝗔𝗗𝗜𝗡𝗚 ✦</blockquote>\n──────────────────\n<blockquote>・ Aɴɪᴍᴇ: {anime_title}\n・ Eᴘɪsᴏᴅᴇ: {episode_number}</blockquote>\n──────────────────\n<blockquote>≡ ᴘᴏᴡᴇʀᴇᴅ ʙʏ: <a href='t.me/{channel_format}'>{CHANNEL_NAME}</a></blockquote></b>")
+    progress = ProgressMessage(client, user_id, f"<blockquote><b>✦ 𝗗𝗢𝗪𝗡𝗟𝗢𝗔𝗗𝗜𝗡𝗚 ✦</blockquote>\n──────────────────\n<blockquote>・ Dʀᴀᴍᴀ: {drama_title}\n・ Eᴘɪsᴏᴅᴇ: {episode_number}</blockquote>\n──────────────────\n<blockquote>≡ ᴘᴏᴡᴇʀᴇᴅ ʙʏ: <a href='t.me/{channel_format}'>{CHANNEL_NAME}</a></blockquote></b>")
     if not await progress.send():
         await safe_respond(event, "<blockquote><b>ғᴀɪʟᴇᴅ ᴛᴏ ɪɴɪᴛɪᴀʟɪᴢᴇ ᴘʀᴏɢʀᴇss ᴛʀᴀᴄᴋɪɴɢ</b></blockquote>", parse_mode='html')
         return
@@ -1328,13 +1328,13 @@ async def download_episode(event, anime_title, anime_session, episode_number, ep
     is_dub = 'eng' in quality_link['text'].lower()
     type_str = "Dub" if is_dub else "Sub"
     
-    base_name = format_filename(anime_title, episode_number, resolution, type_str)
+    base_name = format_filename(drama_title, episode_number, resolution, type_str)
     main_channel_username = CHANNEL_USERNAME if CHANNEL_USERNAME else BOT_USERNAME
     full_caption = f"**{base_name} {main_channel_username}.mkv**"
     filename = sanitize_filename(full_caption)
     download_path = os.path.join(DOWNLOAD_DIR, filename)
     
-    await progress.update(f"<blockquote><b>✦ 𝗗𝗢𝗪𝗡𝗟𝗢𝗔𝗗𝗜𝗡𝗚 ✦</blockquote>\n──────────────────\n<blockquote>・ Aɴɪᴍᴇ:{filename}\n・ sᴛᴀᴛᴜs: ᴘʀᴏᴄᴇssɪɴɢ ᴅᴏᴡɴʟᴏᴀᴅ ʟɪɴᴋ...</blockquote>\n──────────────────\n<blockquote>≡ ᴘᴏᴡᴇʀᴇᴅ ʙʏ: <a href='t.me/{channel_format}'>{CHANNEL_NAME}</a></blockquote></b>", parse_mode='html')
+    await progress.update(f"<blockquote><b>✦ 𝗗𝗢𝗪𝗡𝗟𝗢𝗔𝗗𝗜𝗡𝗚 ✦</blockquote>\n──────────────────\n<blockquote>・ Dʀᴀᴍᴀ:{filename}\n・ sᴛᴀᴛᴜs: ᴘʀᴏᴄᴇssɪɴɢ ᴅᴏᴡɴʟᴏᴀᴅ ʟɪɴᴋ...</blockquote>\n──────────────────\n<blockquote>≡ ᴘᴏᴡᴇʀᴇᴅ ʙʏ: <a href='t.me/{channel_format}'>{CHANNEL_NAME}</a></blockquote></b>", parse_mode='html')
     
     kwik_link = extract_kwik_link(quality_link['href'])
     if not kwik_link:
@@ -1386,7 +1386,7 @@ async def download_episode(event, anime_title, anime_session, episode_number, ep
                     progress_text = (
                         f"<blockquote><b>✦ 𝗗𝗢𝗪𝗡𝗟𝗢𝗔𝗗𝗜𝗡𝗚 ✦</blockquote>\n"
                         f"──────────────────\n"
-                        f"<blockquote>・ Aɴɪᴍᴇ: {filename}\n"
+                        f"<blockquote>・ Dʀᴀᴍᴀ: {filename}\n"
                         f"・ Pʀᴏɢʀᴇss: {percent:.1f}%\n"
                         f"・ Sɪᴢᴇ: {format_size(downloaded)}/{format_size(total)}\n"
                         f"・ Sᴘᴇᴇᴅ: {format_speed(speed_val)}</blockquote>\n"
@@ -1465,7 +1465,7 @@ async def download_episode(event, anime_title, anime_session, episode_number, ep
                                 progress_text = (
                                     f"<blockquote><b>✦ 𝗗𝗢𝗪𝗡𝗟𝗢𝗔𝗗𝗜𝗡𝗚 ✦</blockquote>\n"
                                     f"──────────────────\n"
-                                    f"<blockquote>・ Aɴɪᴍᴇ: {filename}\n"
+                                    f"<blockquote>・ Dʀᴀᴍᴀ: {filename}\n"
                                     f"・ Pʀᴏɢʀᴇss: {percent:.1f}%\n"
                                     f"・ Sɪᴢᴇ: {format_size(downloaded)}\n"
                                     f"・ Sᴘᴇᴇᴅ:  {format_speed(speed)}</blockquote>\n"
@@ -1476,7 +1476,7 @@ async def download_episode(event, anime_title, anime_session, episode_number, ep
                                 progress_text = (
                                     f"<blockquote><b>✦ 𝗗𝗢𝗪𝗡𝗟𝗢𝗔𝗗𝗜𝗡𝗚 ✦</blockquote>\n"
                                     f"──────────────────\n"
-                                    f"<blockquote>・ Aɴɪᴍᴇ: {filename}\n"
+                                    f"<blockquote>・ Dʀᴀᴍᴀ: {filename}\n"
                                     f"・ Sɪᴢᴇ: {format_size(downloaded)}\n"
                                     f"・ Sᴘᴇᴇᴅ:  {format_speed(speed)}</blockquote>\n"
                                     f"──────────────────\n"

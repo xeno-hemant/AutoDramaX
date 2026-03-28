@@ -67,7 +67,7 @@ try:
     ADMIN_CHAT_ID = int(get_env_var("ADMIN_CHAT_ID", "1008989961"))
     MONGO_URI = get_env_var("MONGO_URI", "mongodb+srv://vishalleaks:vishalleaks@cluster0.hhhbseg.mongodb.net/?appName=Cluster0", required=False)
     PORT = int(get_env_var("PORT", "8090"))
-    BOT_USERNAME = get_env_var("BOT_USERNAME", "AniWebAutoBot")
+    BOT_USERNAME = get_env_var("BOT_USERNAME", "DramaXAutoBot")
     logger.info("Successfully loaded all environment variables")
 except ValueError as e:
     logger.error(f"Environment variable error: {e}")

@@ -409,7 +409,7 @@ async def check_and_process_next_episode(progress=None):
                 await progress.update(
                 f"<b><blockquote>✦ 𝗘𝗣𝗜𝗦𝗢𝗗𝗘 𝗖𝗛𝗘𝗖𝗞𝗜𝗡𝗚 ✦</blockquote>\n"
                 f"──────────────────\n"
-                f"<blockquote>・ Aɴɪᴍᴇ: {drama_title} \n"
+                f"<blockquote>・ Dʀᴀᴍᴀ: {drama_title} \n"
                 f"・ Eᴘɪsᴏᴅᴇ: {episode_number}\n"
                 f"・ Sᴛᴀᴛᴜs: Cʜᴇᴄᴋɪɴɢ</blockquote>\n"
                 f"──────────────────\n"
@@ -669,7 +669,7 @@ async def check_for_new_episodes(client):
                     f"<blockquote>・ Pʀᴏᴄᴇssᴇᴅ: {processed_count}\n"
                     f"・ Fᴀɪʟᴇᴅ: {failed_count}\n"
                     f"・ Sᴋɪᴘᴘᴇᴅ: {skipped_count}\n"
-                    f"・ Tᴏᴛᴀʟ: {len(unprocessed_anime)}</blockquote>\n"
+                    f"・ Tᴏᴛᴀʟ: {len(unprocessed_dramas)}</blockquote>\n"
                     f"──────────────────\n"
                     f"<blockquote>≡ ᴘᴏᴡᴇʀᴇᴅ ʙʏ: <a href='t.me/{channel_format}'>{CHANNEL_NAME}</a></blockquote></b>",
                     parse_mode='html'
@@ -1030,10 +1030,10 @@ async def process_daily_requests(client):
                     )
                 
                 processed_any = False
-                for result_idx, anime_result in enumerate(remaining_results[:1], 1):
+                for result_idx, drama_result in enumerate(remaining_results[:1], 1):
                     try:
-                        drama_title = anime_result.get('title', anime_result.get('drama_title', anime_result.get('drama_title', 'Unknown')))
-                        drama_url = anime_result.get('url', '')
+                        drama_title = drama_result.get('title', drama_result.get('drama_title', drama_result.get('drama_title', 'Unknown')))
+                        drama_url = drama_result.get('url', '')
                         
                         if progress:
                             await progress.update(

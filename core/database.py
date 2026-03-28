@@ -326,34 +326,34 @@ async def add_request(user_id: int, text: str, username: str = None) -> bool:
         return False
 
 
-async def add_processed_request_result(request_text: str, anime_title: str) -> bool:
+async def add_processed_request_result(request_text: str, drama_title: str) -> bool:
     try:
         if processed_requests_collection is not None:
             processed_requests_collection.update_one(
                 {"request_text": request_text},
                 {
-                    "$addToSet": {"processed_results": anime_title},
+                    "$addToSet": {"processed_results": drama_title},
                     "$set": {"updated_at": datetime.now().isoformat()}
                 },
                 upsert=True
             )
-            logger.info(f"Added processed result '{anime_title}' for request '{request_text}'")
+            logger.info(f"Added processed result '{drama_title}' for request '{request_text}'")
         else:
             data = load_json_data()
             processed_list = data.setdefault("processed_requests", [])
             existing = next((item for item in processed_list if item["request_text"] == request_text), None)
             if existing:
-                if anime_title not in existing.get("processed_results", []):
-                    existing.setdefault("processed_results", []).append(anime_title)
+                if drama_title not in existing.get("processed_results", []):
+                    existing.setdefault("processed_results", []).append(drama_title)
                 existing["updated_at"] = datetime.now().isoformat()
             else:
                 processed_list.append({
                     "request_text": request_text,
-                    "processed_results": [anime_title],
+                    "processed_results": [drama_title],
                     "updated_at": datetime.now().isoformat()
                 })
             save_json_data(data)
-            logger.info(f"Added processed result '{anime_title}' for request '{request_text}' (JSON)")
+            logger.info(f"Added processed result '{drama_title}' for request '{request_text}' (JSON)")
         
         return True
     except Exception as e:

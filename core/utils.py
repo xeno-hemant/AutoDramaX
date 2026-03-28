@@ -269,7 +269,7 @@ def update_processed_episode(drama_title: str, episode_number: int) -> bool:
 
 
 # Legacy alias for backward compatibility
-def update_processed_qualities(drama_title: str, episode_number: int, quality: str = None) -> bool:
+def mark_episode_processed(drama_title: str, episode_number: int, quality: str = None) -> bool:
     return update_processed_episode(drama_title, episode_number)
 
 
@@ -441,7 +441,7 @@ def get_drama_hashtag(drama_title: str) -> str:
 
 
 # Legacy alias
-def get_anime_hashtag(title: str) -> str:
+def get_drama_hashtag(title: str) -> str:
     return get_drama_hashtag(title)
 
 

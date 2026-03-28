@@ -64,8 +64,8 @@ async def download_drama_by_index(event, index: int, force_redownload: bool = Fa
             )
             return False
         
-        await progress.update("<b><blockquote>ғᴇᴛᴄʜɪɴɢ ʟᴀᴛᴇsᴛ ᴀɴɪᴍᴇ ʟɪsᴛ...</b></blockquote>", parse_mode='html')
-        latest_data = get_latest_releases(page=1)
+        await progress.update("<b><blockquote>ғᴇᴛᴄʜɪɴɢ ʟᴀᴛᴇsᴛ ᴅʀᴀᴍᴀ ʟɪsᴛ...</b></blockquote>", parse_mode='html')
+        latest_data = get_latest_dramas(page=1)
         if not latest_data or 'data' not in latest_data:
             logger.error("Failed to get latest releases")
             await progress.update("<b><blockquote>ғᴀɪʟᴇᴅ ᴛᴏ ɢᴇᴛ ʟᴀᴛᴇsᴛ ʀᴇʟᴇᴀsᴇs</b></blockquote>", parse_mode='html')
@@ -76,44 +76,44 @@ async def download_drama_by_index(event, index: int, force_redownload: bool = Fa
             await progress.update(f"<b><blockquote>ɪɴᴠᴀʟɪᴅ ɪɴᴅᴇx: {index}. ᴍᴜsᴛ ʙᴇ ʙᴇᴛᴡᴇᴇɴ 1 ᴀɴᴅ {len(latest_data['data'])}</b></blockquote>", parse_mode='html')
             return False
         
-        anime_data = latest_data['data'][index - 1]
-        anime_title = anime_data.get('anime_title', 'Unknown Anime')
-        episode_number = anime_data.get('episode', 0)
+        drama_data = latest_data['data'][index - 1]
+        drama_title = drama_data.get('drama_title', 'Unknown Drama')
+        episode_number = drama_data.get('episode', 0)
         
-        logger.info(f"Selected anime: {anime_title} Episode {episode_number}")
+        logger.info(f"Selected drama: {drama_title} Episode {episode_number}")
         await progress.update(
             f"<b><blockquote>✦ 𝗙𝗘𝗧𝗖𝗛𝗜𝗡𝗚 𝗗𝗘𝗧𝗔𝗜𝗟𝗦 ✦</blockquote>\n"
             f"──────────────────\n"
-            f"<blockquote>・ Aɴɪᴍᴇ: {anime_title}\n"
+            f"<blockquote>・ Dʀᴀᴍᴀ: {drama_title}\n"
             f"・ Eᴘɪsᴏᴅᴇ: {episode_number}\n"
-            f"・ Sᴛᴀᴛᴜs: Fᴇᴛᴄʜɪɴɢ ᴀɴɪᴍᴇ ᴅᴇᴛᴀɪʟs...</blockquote>\n"
+            f"・ Sᴛᴀᴛᴜs: Fᴇᴛᴄʜɪɴɢ ᴅʀᴀᴍᴀ ᴅᴇᴛᴀɪʟs...</blockquote>\n"
             f"──────────────────\n"
             f"<blockquote>≡ ᴘᴏᴡᴇʀᴇᴅ ʙʏ: <a href='t.me/{channel_format}'>{CHANNEL_NAME}</a></blockquote></b>",
             parse_mode='html'
         )
         
-        search_results = await search_anime(anime_title)
+        search_results = await search_drama(drama_title)
         if not search_results:
-            logger.error(f"Anime not found: {anime_title}")
-            await progress.update(f"<b><blockquote>ᴀɴɪᴍᴇ ɴᴏᴛ ғᴏᴜɴᴅ: {anime_title}</b></blockquote>", parse_mode='html')
+            logger.error(f"Drama not found: {drama_title}")
+            await progress.update(f"<b><blockquote>ᴅʀᴀᴍᴀ ɴᴏᴛ ғᴏᴜɴᴅ: {drama_title}</b></blockquote>", parse_mode='html')
             return False
         
-        anime_info = search_results[0]
-        anime_session = anime_info['session']
+        drama_info = search_results[0]
+        drama_session = drama_info['session']
         await progress.update(
             f"<b><blockquote>✦ 𝗙𝗘𝗧𝗖𝗛𝗜𝗡𝗚 𝗘𝗣𝗜𝗦𝗢𝗗𝗘 ✦</blockquote>\n"
             f"──────────────────\n"
-            f"<blockquote>・ Aɴɪᴍᴇ: {anime_title}\n"
+            f"<blockquote>・ Dʀᴀᴍᴀ: {drama_title}\n"
             f"・ Eᴘɪsᴏᴅᴇ: {episode_number}\n"
             f"・ Sᴛᴀᴛᴜs: Fᴇᴛᴄʜɪɴɢ ᴇᴘɪsᴏᴅᴇ ʟɪsᴛ...</blockquote>\n"
             f"──────────────────\n"
             f"<blockquote>≡ ᴘᴏᴡᴇʀᴇᴅ ʙʏ: <a href='t.me/{channel_format}'>{CHANNEL_NAME}</a></blockquote></b>",
             parse_mode='html'
         )
-        episodes = await get_all_episodes(anime_session)
+        episodes = await get_episode_list(drama_session)
         if not episodes:
-            logger.error(f"Failed to get episode list for {anime_title}")
-            await progress.update(f"<b><blockquote>ғᴀɪʟᴇᴅ ᴛᴏ ɢᴇᴛ ᴇᴘɪsᴏᴅᴇ ʟɪsᴛ ғᴏʀ {anime_title}</b></blockquote>", parse_mode='html')
+            logger.error(f"Failed to get episode list for {drama_title}")
+            await progress.update(f"<b><blockquote>ғᴀɪʟᴇᴅ ᴛᴏ ɢᴇᴛ ᴇᴘɪsᴏᴅᴇ ʟɪsᴛ ғᴏʀ {drama_title}</b></blockquote>", parse_mode='html')
             return False
         
         target_episode = None
@@ -126,7 +126,7 @@ async def download_drama_by_index(event, index: int, force_redownload: bool = Fa
                 continue
         
         if not target_episode:
-            logger.warning(f"Episode {episode_number} not found for {anime_title}. Looking for closest available.")
+            logger.warning(f"Episode {episode_number} not found for {drama_title}. Looking for closest available.")
             target_episode = find_closest_episode(episodes, episode_number)
             if target_episode:
                 actual_episode = int(target_episode['episode'])
@@ -135,7 +135,7 @@ async def download_drama_by_index(event, index: int, force_redownload: bool = Fa
                 await progress.update(
                     f"<b><blockquote>✦ 𝗖𝗟𝗢𝗦𝗘𝗦𝗧 𝗘𝗣𝗜𝗦𝗢𝗗𝗘 𝗙𝗢𝗨𝗡𝗗 ✦</blockquote>\n"
                     f"──────────────────\n"
-                    f"<blockquote>・ Aɴɪᴍᴇ: {anime_title}\n"
+                    f"<blockquote>・ Dʀᴀᴍᴀ: {drama_title}\n"
                     f"・ Eᴘɪsᴏᴅᴇ: {episode_number}\n"
                     f"・ Sᴛᴀᴛᴜs: ᴄʟᴏsᴇsᴛ {actual_episode}</blockquote>\n"
                     f"──────────────────\n"
@@ -143,8 +143,8 @@ async def download_drama_by_index(event, index: int, force_redownload: bool = Fa
                     parse_mode='html'
                 )
             else:
-                logger.error(f"No episodes found for {anime_title}")
-                await progress.update(f"<b><blockquote>ɴᴏ ᴇᴘɪsᴏᴅᴇs ғᴏᴜɴᴅ ғᴏʀ {anime_title}</b></blockquote>", parse_mode='html')
+                logger.error(f"No episodes found for {drama_title}")
+                await progress.update(f"<b><blockquote>ɴᴏ ᴇᴘɪsᴏᴅᴇs ғᴏᴜɴᴅ ғᴏʀ {drama_title}</b></blockquote>", parse_mode='html')
                 return False
         
         episode_session = target_episode['session']
@@ -152,7 +152,7 @@ async def download_drama_by_index(event, index: int, force_redownload: bool = Fa
         await progress.update(
             f"<b><blockquote>✦ 𝗙𝗘𝗧𝗖𝗛𝗜𝗡𝗚 𝗗𝗢𝗪𝗡𝗟𝗢𝗔𝗗 𝗟𝗜𝗡𝗞𝗦 ✦</blockquote>\n"
             f"──────────────────\n"
-            f"<blockquote>・ Aɴɪᴍᴇ: {anime_title}\n"
+            f"<blockquote>・ Dʀᴀᴍᴀ: {drama_title}\n"
             f"・ Eᴘɪsᴏᴅᴇ: {episode_number}\n"
             f"・ Sᴛᴀᴛᴜs: Pʀᴏᴄᴇssɪɴɢ</blockquote>\n"
             f"──────────────────\n"
@@ -160,10 +160,10 @@ async def download_drama_by_index(event, index: int, force_redownload: bool = Fa
             parse_mode='html'
         )
 
-        download_links = get_download_links(anime_session, episode_session)
+        download_links = get_download_links(drama_session, episode_session)
         if not download_links:
-            logger.error(f"No download links found for {anime_title} Episode {episode_number}")
-            await progress.update(f"<b><blockquote>ɴᴏ ᴅᴏᴡɴʟᴏᴀᴅ ʟɪɴᴋs ғᴏᴜɴᴅ ғᴏʀ {anime_title} | ᴇᴘɪsᴏᴅᴇ {episode_number}<b></blockquote>", parse_mode='html')
+            logger.error(f"No download links found for {drama_title} Episode {episode_number}")
+            await progress.update(f"<b><blockquote>ɴᴏ ᴅᴏᴡɴʟᴏᴀᴅ ʟɪɴᴋs ғᴏᴜɴᴅ ғᴏʀ {drama_title} | ᴇᴘɪsᴏᴅᴇ {episode_number}<b></blockquote>", parse_mode='html')
             return False
         
         enabled_qualities = quality_settings.enabled_qualities
@@ -175,10 +175,10 @@ async def download_drama_by_index(event, index: int, force_redownload: bool = Fa
         available_qualities = [q for q, link in quality_mapping.items() if link is not None]
         
         if not available_qualities:
-            logger.error(f"No suitable qualities found for {anime_title} Episode {episode_number}")
+            logger.error(f"No suitable qualities found for {drama_title} Episode {episode_number}")
             logger.info(f"Available links: {[link['text'] for link in download_links]}")
             await progress.update(
-                f"<b><blockquote>ɴᴏ sᴜɪᴛᴀʙʟᴇ ǫᴜᴀʟɪᴛɪᴇs ғᴏᴜɴᴅ ғᴏʀ {anime_title} | ᴇᴘɪsᴏᴅᴇ {episode_number}</b></blockquote>",
+                f"<b><blockquote>ɴᴏ sᴜɪᴛᴀʙʟᴇ ǫᴜᴀʟɪᴛɪᴇs ғᴏᴜɴᴅ ғᴏʀ {drama_title} | ᴇᴘɪsᴏᴅᴇ {episode_number}</b></blockquote>",
                 parse_mode='html'
             )
             return False
@@ -192,7 +192,7 @@ async def download_drama_by_index(event, index: int, force_redownload: bool = Fa
         
         for quality in sorted_qualities:
             try:
-                logger.info(f"Downloading {anime_title} Episode {episode_number} {quality}")
+                logger.info(f"Downloading {drama_title} Episode {episode_number} {quality}")
                 
                 quality_link = quality_mapping.get(quality)
                 
@@ -204,7 +204,7 @@ async def download_drama_by_index(event, index: int, force_redownload: bool = Fa
                 await progress.update(
                     f"<b><blockquote>✦ 𝗗𝗢𝗪𝗡𝗟𝗢𝗔𝗗𝗜𝗡𝗚 ✦</blockquote>\n"
                     f"──────────────────\n"
-                    f"<blockquote>・ Aɴɪᴍᴇ: {anime_title}\n"
+                    f"<blockquote>・ Dʀᴀᴍᴀ: {drama_title}\n"
                     f"・ Eᴘɪsᴏᴅᴇ: {episode_number}\n"
                     f"・ Sᴛᴀᴛᴜs: Pʀᴏᴄᴇssɪɴɢ {quality}</blockquote>\n"
                     f"──────────────────\n"
@@ -212,7 +212,7 @@ async def download_drama_by_index(event, index: int, force_redownload: bool = Fa
                     parse_mode='html'
                 )
                 
-                base_name = format_filename(anime_title, episode_number, quality, "Sub" if not is_dub else "Dub")
+                base_name = format_filename(drama_title, episode_number, quality, "Sub" if not is_dub else "Dub")
                 main_channel_username = CHANNEL_USERNAME if CHANNEL_USERNAME else BOT_USERNAME
                 full_caption = f"**{base_name} {main_channel_username}.mkv**"
                 filename = sanitize_filename(full_caption)
@@ -228,7 +228,7 @@ async def download_drama_by_index(event, index: int, force_redownload: bool = Fa
                     logger.error(f"Failed to get direct link for {quality}")
                     continue
                 
-                logger.info(f"Downloading {anime_title} Episode {episode_number} {quality}")
+                logger.info(f"Downloading {drama_title} Episode {episode_number} {quality}")
 
                 last_update = time.time()
                 download_start = time.time()
@@ -263,7 +263,7 @@ async def download_drama_by_index(event, index: int, force_redownload: bool = Fa
                             progress_text = (
                                 f"<b><blockquote>✦ 𝗗𝗢𝗪𝗡𝗟𝗢𝗔𝗗𝗜𝗡𝗚 ✦</blockquote>\n"
                                 f"──────────────────\n"
-                                f"<blockquote>・ Aɴɪᴍᴇ: {anime_title}\n"
+                                f"<blockquote>・ Dʀᴀᴍᴀ: {drama_title}\n"
                                 f"・ Eᴘɪsᴏᴅᴇ: {episode_number}\n"
                                 f"・ Pʀᴏᴄᴇssɪɴɢ: {quality}: {percent:.1f}%\n"
                                 f"・ Sɪᴢᴇ: {format_size(downloaded)}/{format_size(total)}\n"
@@ -302,7 +302,7 @@ async def download_drama_by_index(event, index: int, force_redownload: bool = Fa
                 avg_speed = file_size / download_time if download_time > 0 else 0
                 
                 await progress.update(
-                    f"Selected: {anime_title} Episode {episode_number}\n\n"
+                    f"Selected: {drama_title} Episode {episode_number}\n\n"
                     f"Download completed for {quality}!\n"
                     f"Time: {download_time:.1f}s\n"
                     f"Size: {format_size(file_size)}\n"
@@ -311,12 +311,12 @@ async def download_drama_by_index(event, index: int, force_redownload: bool = Fa
                 )
                 
                 if FFMPEG_AVAILABLE:
-                    final_path = os.path.join(DOWNLOAD_DIR, f"[E{episode_number:02d}] {anime_title} [{quality}].mkv")
+                    final_path = os.path.join(DOWNLOAD_DIR, f"[E{episode_number:02d}] {drama_title} [{quality}].mkv")
                     if await rename_video_with_ffmpeg(download_path, final_path):
                         os.remove(download_path)
                         download_path = final_path
                 
-                await progress.update(f"Selected: {anime_title} Episode {episode_number}\n\nUploading {quality} to Telegram...", parse_mode='html')
+                await progress.update(f"Selected: {drama_title} Episode {episode_number}\n\nUploading {quality} to Telegram...", parse_mode='html')
                 
                 caption = full_caption
                 
@@ -376,7 +376,7 @@ async def download_drama_by_index(event, index: int, force_redownload: bool = Fa
                             quality_files[quality] = []
                         quality_files[quality].append(dump_msg_id)
 
-                    update_processed_qualities(anime_title, episode_number, quality)
+                    mark_episode_processed(drama_title, episode_number, quality)
                     downloaded_qualities.append(quality)
                     logger.info(f"Successfully uploaded {quality} version")
                     
@@ -430,25 +430,25 @@ async def download_drama_by_index(event, index: int, force_redownload: bool = Fa
                 logger.error(f"Error processing {quality}: {e}")
         
         if quality_files:
-            anime_info = await get_anime_info(anime_title)
-            if anime_info:
-                await post_anime_with_buttons(client, anime_title, anime_info, episode_number, audio_type, quality_files)
+            drama_info = await get_drama_info(drama_title)
+            if drama_info:
+                await post_drama_with_buttons(client, drama_title, drama_info, episode_number, audio_type, quality_files)
         
-        if is_episode_processed(anime_title, episode_number):
-            logger.info(f"All qualities processed for {anime_title} Episode {episode_number}")
+        if is_episode_processed(drama_title, episode_number):
+            logger.info(f"All qualities processed for {drama_title} Episode {episode_number}")
             await progress.update(
                 f"<b><blockquote>sᴜᴄᴄᴇssғᴜʟʟʏ ᴘʀᴏᴄᴇssᴇᴅ:</blockquote>\n"
-                f"<blockquote>ᴀɴɪᴍᴇ: {anime_title}\n"
+                f"<blockquote>ᴅʀᴀᴍᴀ: {drama_title}\n"
                 f"ᴇᴘɪsᴏᴅᴇ: {episode_number}\n"
                 f"ᴅᴏᴡɴʟᴏᴀᴅᴇᴅ: {', '.join(downloaded_qualities)}</b></blockquote>\n",
                 parse_mode='html'
             )
             return True
         else:
-            logger.error(f"Not all qualities downloaded for {anime_title} Episode {episode_number}")
+            logger.error(f"Not all qualities downloaded for {drama_title} Episode {episode_number}")
             await progress.update(
                 f"<b><blockquote>ᴘᴀʀᴛɪᴀʟʟʏ ᴘʀᴏᴄᴇssᴇᴅ:</blockquote>\n"
-                f"<blockquote>ᴀɴɪᴍᴇ: {anime_title}\n"
+                f"<blockquote>ᴅʀᴀᴍᴀ: {drama_title}\n"
                 f"ᴇᴘɪsᴏᴅᴇ: {episode_number}\n"
                 f"ᴅᴏᴡɴʟᴏᴀᴅᴇᴅ: {', '.join(downloaded_qualities)}\n"
                 f"ᴍɪssɪɴɢ: {', '.join(set(enabled_qualities) - set(downloaded_qualities))}</b></blockquote>",
@@ -608,7 +608,7 @@ def register_handlers():
     
                 caption_text=(
                     f"<blockquote><b>🍁 Hᴇʏ, {mention}!</b></blockquote>\n"
-                    f"<blockquote><b><i>I'ᴍ ᴀ ᴀᴜᴛᴏ ᴀɴɪᴍᴇ ʙᴏᴛ. ɪ ᴄᴀɴ ᴅᴏᴡɴʟᴏᴀᴅ ᴏɴɢᴏɪɴɢ ᴀɴᴅ ғɪɴɪsʜᴇᴅ ᴀɴɪᴍᴇ ғʀᴏᴍ ᴀɴɪᴍᴇᴘᴀʜᴇ.ʀᴜ ᴀɴᴅ ᴜᴘʟᴏᴀᴅ ᴛʜᴏsᴇ ғɪʟᴇs ᴏɴ ʏᴏᴜʀ ᴄʜᴀɴᴇʟ ᴅɪʀᴇᴄᴛʟʏ...</i></b>\n</blockquote>"
+                    f"<blockquote><b><i>I'ᴍ ᴀ ᴀᴜᴛᴏ ᴅʀᴀᴍᴀ ʙᴏᴛ. ɪ ᴄᴀɴ ᴅᴏᴡɴʟᴏᴀᴅ ᴏɴɢᴏɪɴɢ ᴀɴᴅ ғɪɴɪsʜᴇᴅ ᴅʀᴀᴍᴀ ғʀᴏᴍ ᴅʀᴀᴍᴀᴘᴀʜᴇ.ʀᴜ ᴀɴᴅ ᴜᴘʟᴏᴀᴅ ᴛʜᴏsᴇ ғɪʟᴇs ᴏɴ ʏᴏᴜʀ ᴄʜᴀɴᴇʟ ᴅɪʀᴇᴄᴛʟʏ...</i></b>\n</blockquote>"
                     f"<blockquote><b>ᴘᴏᴡᴇʀᴇᴅ ʙʏ - <a href='https://t.me/{chnl_user}'>{chnl_name}</a></blockquote></b>"
                 )
                 
@@ -619,8 +619,8 @@ def register_handlers():
                 else:
                     buttons = [
                         [Button.url("𝗗𝗲𝘃𝗲𝗹𝗼𝗽𝗲𝗿", "https://t.me/KamiKaito"),
-                         Button.url("𝗠𝗮𝗶𝗻 𝗖𝗵𝗮𝗻𝗻𝗲𝗹", "https://t.me/GenAnimeOngoing")],
-                        [Button.url("𝗕𝗮𝗰𝗸𝘂𝗽 𝗖𝗵𝗮𝗻𝗻𝗲𝗹", "https://t.me/OngoingAnimeBackup")]
+                         Button.url("𝗠𝗮𝗶𝗻 𝗖𝗵𝗮𝗻𝗻𝗲𝗹", "https://t.me/KDramaMaza")],
+                        [Button.url("𝗕𝗮𝗰𝗸𝘂𝗽 𝗖𝗵𝗮𝗻𝗻𝗲𝗹", "https://t.me/KDramaMaza")]
                     ]
     
                 try:
@@ -645,10 +645,10 @@ def register_handlers():
                     else:
                         buttons = [
                             [Button.url("𝗗𝗲𝘃𝗲𝗹𝗼𝗽𝗲𝗿", "https://t.me/KamiKaito"),
-                            Button.url("𝗠𝗮𝗶𝗻 𝗖𝗵𝗮𝗻𝗻𝗲𝗹", "https://t.me/GenAnimeOngoing")],
-                            [Button.url("𝗕𝗮𝗰𝗸𝘂𝗽 𝗖𝗵𝗮𝗻𝗻𝗲𝗹", "https://t.me/OngoingAnimeBackup")]
+                            Button.url("𝗠𝗮𝗶𝗻 𝗖𝗵𝗮𝗻𝗻𝗲𝗹", "https://t.me/KDramaMaza")],
+                            [Button.url("𝗕𝗮𝗰𝗸𝘂𝗽 𝗖𝗵𝗮𝗻𝗻𝗲𝗹", "https://t.me/KDramaMaza")]
                         ]
-                    await safe_respond(event, f"<blockquote><b>🍁 Hᴇʏ, {mention}!</b></blockquote>\n<blockquote><b><i>I'ᴍ ᴀ ᴀᴜᴛᴏ ᴀɴɪᴍᴇ ʙᴏᴛ. ɪ ᴄᴀɴ ᴅᴏᴡɴʟᴏᴀᴅ ᴏɴɢᴏɪɴɢ ᴀɴᴅ ғɪɴɪsʜᴇᴅ ᴀɴɪᴍᴇ ғʀᴏᴍ ᴀɴɪᴍᴇᴘᴀʜᴇ.ʀᴜ ᴀɴᴅ ᴜᴘʟᴏᴀᴅ ᴛʜᴏsᴇ ғɪʟᴇs ᴏɴ ʏᴏᴜʀ ᴄʜᴀɴᴇʟ ᴅɪʀᴇᴄᴛʟʏ...</i></b>\n<blockquote><b>ᴘᴏᴡᴇʀᴇᴅ ʙʏ - <a href='https://t.me/{chnl_user}'>{chnl_name}</a></blockquote></b>", buttons=buttons, parse_mode='html')
+                    await safe_respond(event, f"<blockquote><b>🍁 Hᴇʏ, {mention}!</b></blockquote>\n<blockquote><b><i>I'ᴍ ᴀ ᴀᴜᴛᴏ ᴅʀᴀᴍᴀ ʙᴏᴛ. ɪ ᴄᴀɴ ᴅᴏᴡɴʟᴏᴀᴅ ᴏɴɢᴏɪɴɢ ᴀɴᴅ ғɪɴɪsʜᴇᴅ ᴅʀᴀᴍᴀ ғʀᴏᴍ ᴅʀᴀᴍᴀᴘᴀʜᴇ.ʀᴜ ᴀɴᴅ ᴜᴘʟᴏᴀᴅ ᴛʜᴏsᴇ ғɪʟᴇs ᴏɴ ʏᴏᴜʀ ᴄʜᴀɴᴇʟ ᴅɪʀᴇᴄᴛʟʏ...</i></b>\n<blockquote><b>ᴘᴏᴡᴇʀᴇᴅ ʙʏ - <a href='https://t.me/{chnl_user}'>{chnl_name}</a></blockquote></b>", buttons=buttons, parse_mode='html')
                 except Exception as e2:
                     logger.error(f"Error sending fallback message: {e2}")
                     await event.respond(f"Error: {e2}")
@@ -760,7 +760,7 @@ def register_handlers():
             return
         
         try:
-            status_msg = await safe_respond(event, "<blockquote><b>ғᴇᴛᴄʜɪɴɢ ʟᴀᴛᴇsᴛ ᴀɴɪᴍᴇ ʟɪsᴛ...</blockquote></b>", parse_mode='html')
+            status_msg = await safe_respond(event, "<blockquote><b>ғᴇᴛᴄʜɪɴɢ ʟᴀᴛᴇsᴛ ᴅʀᴀᴍᴀ ʟɪsᴛ...</blockquote></b>", parse_mode='html')
             
             API_URL = "https://animepahe.si/api?m=airing&page=1"
             async with aiohttp.ClientSession() as session:
@@ -770,19 +770,19 @@ def register_handlers():
                         anime_list = data.get('data', [])
                         
                         if not anime_list:
-                            await status_msg.edit("<blockquote><b>ɴᴏ ʟᴀᴛᴇsᴛ ᴀɴɪᴍᴇ ᴀᴠᴀɪʟᴀʙʟᴇ ᴀᴛ ᴛʜᴇ ᴍᴏᴍᴇɴᴛ.</b></blockquote>", parse_mode='html')
+                            await status_msg.edit("<blockquote><b>ɴᴏ ʟᴀᴛᴇsᴛ ᴅʀᴀᴍᴀ ᴀᴠᴀɪʟᴀʙʟᴇ ᴀᴛ ᴛʜᴇ ᴍᴏᴍᴇɴᴛ.</b></blockquote>", parse_mode='html')
                             return
                         
-                        latest_anime_text = "<blockquote><b>Lᴀᴛᴇsᴛ Aɪʀɪɴɢ Aɴɪᴍᴇ:</b></blockquote>\n"
-                        for idx, anime in enumerate(anime_list[:10], start=1):
-                            title = anime.get('anime_title', 'Unknown Title')
-                            anime_session = anime.get('anime_session', '')
-                            episode = anime.get('episode', 'N/A')
-                            link = f"https://animepahe.si/anime/{anime_session}" if anime_session else "#"
+                        latest_anime_text = "<blockquote><b>Lᴀᴛᴇsᴛ Aɪʀɪɴɢ Dʀᴀᴍᴀ:</b></blockquote>\n"
+                        for idx, drama in enumerate(anime_list[:10], start=1):
+                            title = drama.get('drama_title', 'Unknown Title')
+                            drama_session = drama.get('drama_session', '')
+                            episode = drama.get('episode', 'N/A')
+                            link = f"https://kdramamaza.net/{drama_session}" if drama_session else "#"
                             
-                            latest_anime_text += f"<blockquote><b>{idx}. <a href='{link}'>{title}</a> [E{episode}]</b></blockquote>\n"
+                            latest_drama_text += f"<blockquote><b>{idx}. <a href='{link}'>{title}</a> [E{episode}]</b></blockquote>\n"
                         
-                        await status_msg.edit(latest_anime_text, parse_mode='html', link_preview=False)
+                        await status_msg.edit(latest_drama_text, parse_mode='html', link_preview=False)
                     else:
                         await status_msg.edit(f"<blockquote><b>ғᴀɪʟᴇᴅ ᴛᴏ ғᴇᴛᴄʜ ᴅᴀᴛᴀ.</b> <i>sᴛᴀᴛᴜs ᴄᴏᴅᴇ: {response.status}</i></blockquote>", parse_mode='html')
         
@@ -796,9 +796,9 @@ def register_handlers():
             return
         
         try:
-            status_msg = await safe_respond(event, "<blockquote><b>ғᴇᴛᴄʜɪɴɢ ᴀɪʀɪɴɢ ᴀɴɪᴍᴇ ʟɪsᴛ...</blockquote></b>", parse_mode='html')
+            status_msg = await safe_respond(event, "<blockquote><b>ғᴇᴛᴄʜɪɴɢ ᴀɪʀɪɴɢ ᴅʀᴀᴍᴀ ʟɪsᴛ...</blockquote></b>", parse_mode='html')
             
-            API_URL = "https://animepahe.si/anime/airing"
+            API_URL = "https://kdramamaza.net/feed/"
             async with aiohttp.ClientSession() as session:
                 async with session.get(API_URL, headers=HEADERS) as response:
                     if response.status == 200:
@@ -807,13 +807,13 @@ def register_handlers():
                         anime_list = soup.select(".index-wrapper .index a")
                         
                         if not anime_list:
-                            await status_msg.edit("<blockquote><b>ɴᴏ ᴀɪʀɪɴɢ ᴀɴɪᴍᴇ ᴀᴠᴀɪʟᴀʙʟᴇ ᴀᴛ ᴛʜᴇ ᴍᴏᴍᴇɴᴛ.</b></blockquote>", parse_mode='html')
+                            await status_msg.edit("<blockquote><b>ɴᴏ ᴀɪʀɪɴɢ ᴅʀᴀᴍᴀ ᴀᴠᴀɪʟᴀʙʟᴇ ᴀᴛ ᴛʜᴇ ᴍᴏᴍᴇɴᴛ.</b></blockquote>", parse_mode='html')
                             return
                         
-                        airing_anime_text = "<blockquote><b>Cᴜʀʀᴇɴᴛʟʏ Aɪʀɪɴɢ Aɴɪᴍᴇ:</b></blockquote>\n"
-                        for idx, anime in enumerate(anime_list[:15], start=1):
-                            title = anime.get("title", "Unknown Title")
-                            href = anime.get("href", "")
+                        airing_anime_text = "<blockquote><b>Cᴜʀʀᴇɴᴛʟʏ Aɪʀɪɴɢ Dʀᴀᴍᴀ:</b></blockquote>\n"
+                        for idx, drama in enumerate(anime_list[:15], start=1):
+                            title = drama.get("title", "Unknown Title")
+                            href = drama.get("href", "")
                             
                             if href:
                                 link = f"https://animepahe.si{href}"
@@ -837,7 +837,7 @@ def register_handlers():
         parts = event.text.split()
         if len(parts) < 2:
             try:
-                status_msg = await safe_respond(event, "<blockquote><b>ғᴇᴛᴄʜɪɴɢ ʟᴀᴛᴇsᴛ ᴀɴɪᴍᴇ ʟɪsᴛ...</blockquote></b>", parse_mode='html')
+                status_msg = await safe_respond(event, "<blockquote><b>ғᴇᴛᴄʜɪɴɢ ʟᴀᴛᴇsᴛ ᴅʀᴀᴍᴀ ʟɪsᴛ...</blockquote></b>", parse_mode='html')
                 
                 API_URL = "https://animepahe.si/api?m=airing&page=1"
                 async with aiohttp.ClientSession() as session:
@@ -847,16 +847,16 @@ def register_handlers():
                             anime_list = data.get('data', [])
                             
                             if not anime_list:
-                                await status_msg.edit("<blockquote><b>ɴᴏ ʟᴀᴛᴇsᴛ ᴀɴɪᴍᴇ ᴀᴠᴀɪʟᴀʙʟᴇ ᴀᴛ ᴛʜᴇ ᴍᴏᴍᴇɴᴛ.</b></blockquote>", parse_mode='html')
+                                await status_msg.edit("<blockquote><b>ɴᴏ ʟᴀᴛᴇsᴛ ᴅʀᴀᴍᴀ ᴀᴠᴀɪʟᴀʙʟᴇ ᴀᴛ ᴛʜᴇ ᴍᴏᴍᴇɴᴛ.</b></blockquote>", parse_mode='html')
                                 return
                             
-                            latest_anime_text = "<blockquote><b>Lᴀᴛᴇsᴛ Aɪʀɪɴɢ Aɴɪᴍᴇ:</b></blockquote>\n"
-                            for idx, anime in enumerate(anime_list[:10], start=1):
-                                title = anime.get('anime_title', 'Unknown Title')
-                                episode = anime.get('episode', 'N/A')
+                            latest_anime_text = "<blockquote><b>Lᴀᴛᴇsᴛ Aɪʀɪɴɢ Dʀᴀᴍᴀ:</b></blockquote>\n"
+                            for idx, drama in enumerate(anime_list[:10], start=1):
+                                title = drama.get('drama_title', 'Unknown Title')
+                                episode = drama.get('episode', 'N/A')
                                 latest_anime_text += f"<blockquote><b>{idx}. {title} [E{episode}]</b></blockquote>\n"
                             
-                            latest_anime_text += "\n<b><blockquote>ᴜsᴇ /redownload [number] ᴛᴏ ғᴏʀᴄᴇ ʀᴇᴅᴏᴡɴʟᴏᴀᴅ ᴀ sᴘᴇᴄɪғɪᴄ ᴀɴɪᴍᴇ.</b></blockquote>"
+                            latest_anime_text += "\n<b><blockquote>ᴜsᴇ /redownload [number] ᴛᴏ ғᴏʀᴄᴇ ʀᴇᴅᴏᴡɴʟᴏᴀᴅ ᴀ sᴘᴇᴄɪғɪᴄ ᴅʀᴀᴍᴀ.</b></blockquote>"
                             await status_msg.edit(latest_anime_text, parse_mode='html', link_preview=False)
                         else:
                             await status_msg.edit(f"<b><blockquote>ғᴀɪʟᴇᴅ ᴛᴏ ғᴇᴛᴄʜ ᴅᴀᴛᴀ.\nsᴛᴀᴛᴜs ᴄᴏᴅᴇ: {response.status}</b></blockquote>", parse_mode='html')
@@ -868,11 +868,11 @@ def register_handlers():
         try:
             index = int(parts[1])
             if index < 1:
-                status_msg = await safe_respond(event, "<blockquote><b>ᴀᴅᴅɪɴɢ ᴛᴀsᴋ ᴛᴏ ᴅᴏᴡɴʟᴏᴀᴅ ᴀɴɪᴍᴇ ᴀᴛ ɪɴᴅᴇx {index}...</b></blockquote>", parse_mode='html')
+                status_msg = await safe_respond(event, "<blockquote><b>ᴀᴅᴅɪɴɢ ᴛᴀsᴋ ᴛᴏ ᴅᴏᴡɴʟᴏᴀᴅ ᴅʀᴀᴍᴀ ᴀᴛ ɪɴᴅᴇx {index}...</b></blockquote>", parse_mode='html')
                 await status_msg.edit("<blockquote><b>ɪɴᴅᴇx ᴍᴜsᴛ ʙᴇ ᴀ ᴘᴏsɪᴛɪᴠᴇ ɴᴜᴍʙᴇʀ.</b></blockquote>", parse_mode='html')
                 return
             
-            status_msg = await safe_respond(event, f"<blockquote><b>ᴀᴅᴅɪɴɢ ᴛᴀsᴋ ᴛᴏ ᴅᴏᴡɴʟᴏᴀᴅ ᴀɴɪᴍᴇ ᴀᴛ ɪɴᴅᴇx {index}...</b></blockquote>", parse_mode='html')
+            status_msg = await safe_respond(event, f"<blockquote><b>ᴀᴅᴅɪɴɢ ᴛᴀsᴋ ᴛᴏ ᴅᴏᴡɴʟᴏᴀᴅ ᴅʀᴀᴍᴀ ᴀᴛ ɪɴᴅᴇx {index}...</b></blockquote>", parse_mode='html')
             success = await download_drama_by_index(event, index)
         except ValueError:
             status_msg = await safe_respond(event, "<blockquote><b>ᴘʟᴇᴀsᴇ ᴘʀᴏᴠɪᴅᴇ ᴀ ᴠᴀʟɪᴅ ɴᴜᴍʙᴇʀ.</b></blockquote>", parse_mode='html')
@@ -888,7 +888,7 @@ def register_handlers():
         parts = event.text.split()
         if len(parts) < 2:
             try:
-                status_msg = await safe_respond(event, "<blockquote><b>ғᴇᴛᴄʜɪɴɢ ʟᴀᴛᴇsᴛ ᴀɴɪᴍᴇ ʟɪsᴛ...</blockquote></b>", parse_mode='html')
+                status_msg = await safe_respond(event, "<blockquote><b>ғᴇᴛᴄʜɪɴɢ ʟᴀᴛᴇsᴛ ᴅʀᴀᴍᴀ ʟɪsᴛ...</blockquote></b>", parse_mode='html')
                 
                 API_URL = "https://animepahe.si/api?m=airing&page=1"
                 async with aiohttp.ClientSession() as session:
@@ -898,16 +898,16 @@ def register_handlers():
                             anime_list = data.get('data', [])
                             
                             if not anime_list:
-                                await status_msg.edit("<blockquote><b>ɴᴏ ʟᴀᴛᴇsᴛ ᴀɴɪᴍᴇ ᴀᴠᴀɪʟᴀʙʟᴇ ᴀᴛ ᴛʜᴇ ᴍᴏᴍᴇɴᴛ.</b></blockquote>", parse_mode='html')
+                                await status_msg.edit("<blockquote><b>ɴᴏ ʟᴀᴛᴇsᴛ ᴅʀᴀᴍᴀ ᴀᴠᴀɪʟᴀʙʟᴇ ᴀᴛ ᴛʜᴇ ᴍᴏᴍᴇɴᴛ.</b></blockquote>", parse_mode='html')
                                 return
                             
-                            latest_anime_text = "<blockquote><b>Lᴀᴛᴇsᴛ Aɪʀɪɴɢ Aɴɪᴍᴇ:</b></blockquote>\n"
-                            for idx, anime in enumerate(anime_list[:10], start=1):
-                                title = anime.get('anime_title', 'Unknown Title')
-                                episode = anime.get('episode', 'N/A')
+                            latest_anime_text = "<blockquote><b>Lᴀᴛᴇsᴛ Aɪʀɪɴɢ Dʀᴀᴍᴀ:</b></blockquote>\n"
+                            for idx, drama in enumerate(anime_list[:10], start=1):
+                                title = drama.get('drama_title', 'Unknown Title')
+                                episode = drama.get('episode', 'N/A')
                                 latest_anime_text += f"<blockquote><b>{idx}. {title} [E{episode}]</b></blockquote>\n"
                             
-                            latest_anime_text += "\n<b><blockquote>ᴜsᴇ /redownload [number] ᴛᴏ ғᴏʀᴄᴇ ʀᴇᴅᴏᴡɴʟᴏᴀᴅ ᴀ sᴘᴇᴄɪғɪᴄ ᴀɴɪᴍᴇ.</b></blockquote>"
+                            latest_anime_text += "\n<b><blockquote>ᴜsᴇ /redownload [number] ᴛᴏ ғᴏʀᴄᴇ ʀᴇᴅᴏᴡɴʟᴏᴀᴅ ᴀ sᴘᴇᴄɪғɪᴄ ᴅʀᴀᴍᴀ.</b></blockquote>"
                             await status_msg.edit(latest_anime_text, parse_mode='html', link_preview=False)
                         else:
                             await status_msg.edit(f"<b><blockquote>ғᴀɪʟᴇᴅ ᴛᴏ ғᴇᴛᴄʜ ᴅᴀᴛᴀ.\nsᴛᴀᴛᴜs ᴄᴏᴅᴇ: {response.status}</b></blockquote>", parse_mode='html')
@@ -919,11 +919,11 @@ def register_handlers():
         try:
             index = int(parts[1])
             if index < 1:
-                status_msg = await safe_respond(event, "<blockquote><b>ᴀᴅᴅɪɴɢ ᴛᴀsᴋ ᴛᴏ ʀᴇᴅᴏᴡɴʟᴏᴀᴅ ᴀɴɪᴍᴇ ᴀᴛ ɪɴᴅᴇx {index}...</b></blockquote>", parse_mode='html')
+                status_msg = await safe_respond(event, "<blockquote><b>ᴀᴅᴅɪɴɢ ᴛᴀsᴋ ᴛᴏ ʀᴇᴅᴏᴡɴʟᴏᴀᴅ ᴅʀᴀᴍᴀ ᴀᴛ ɪɴᴅᴇx {index}...</b></blockquote>", parse_mode='html')
                 await status_msg.edit("<blockquote><b>ɪɴᴅᴇx ᴍᴜsᴛ ʙᴇ ᴀ ᴘᴏsɪᴛɪᴠᴇ ɴᴜᴍʙᴇʀ.</b></blockquote>", parse_mode='html')
                 return
             
-            status_msg = await safe_respond(event, f"<blockquote><b>ᴀᴅᴅɪɴɢ ᴛᴀsᴋ ᴛᴏ ʀᴇᴅᴏᴡɴʟᴏᴀᴅ ᴀɴɪᴍᴇ ᴀᴛ ɪɴᴅᴇx {index}...</b></blockquote>", parse_mode='html')
+            status_msg = await safe_respond(event, f"<blockquote><b>ᴀᴅᴅɪɴɢ ᴛᴀsᴋ ᴛᴏ ʀᴇᴅᴏᴡɴʟᴏᴀᴅ ᴅʀᴀᴍᴀ ᴀᴛ ɪɴᴅᴇx {index}...</b></blockquote>", parse_mode='html')
             success = await download_drama_by_index(event, index, force_redownload=True)
         except ValueError:
             status_msg = await safe_respond(event, "<blockquote><b>ᴘʟᴇᴀsᴇ ᴘʀᴏᴠɪᴅᴇ ᴀ ᴠᴀʟɪᴅ ɴᴜᴍʙᴇʀ.</b></blockquote>", parse_mode='html')
@@ -942,8 +942,8 @@ def register_handlers():
         if not text:
             await safe_respond(
                 event, 
-                "<blockquote><b>ᴘʟᴇᴀsᴇ ᴘʀᴏᴠɪᴅᴇ ᴄʜᴀɴɴᴇʟ ID ᴀɴᴅ ᴀɴɪᴍᴇ ɴᴀᴍᴇ.</b><blockquote>\n"
-                "<blockquote><b>ᴜsᴀɢᴇ:</b> <code>/addchnl [channel_id_or_username] [anime_name]</code><blockquote>\n"
+                "<blockquote><b>ᴘʟᴇᴀsᴇ ᴘʀᴏᴠɪᴅᴇ ᴄʜᴀɴɴᴇʟ ID ᴀɴᴅ ᴅʀᴀᴍᴀ ɴᴀᴍᴇ.</b><blockquote>\n"
+                "<blockquote><b>ᴜsᴀɢᴇ:</b> <code>/addchnl [channel_id_or_username] [drama_name]</code><blockquote>\n"
                 "<blockquote><b>ᴇxᴀᴍᴘʟᴇ:</b> <code>/addchnl -1001234567890 Chitose Is in the Ramune Bottle</code><blockquote>",
                 parse_mode='html'
             )
@@ -953,14 +953,14 @@ def register_handlers():
         if len(parts) < 2:
             await safe_respond(
                 event, 
-                "<blockquote><b>ᴘʟᴇᴀsᴇ ᴘʀᴏᴠɪᴅᴇ ʙᴏᴛʜ ᴄʜᴀɴɴᴇʟ ID ᴀɴᴅ ᴀɴɪᴍᴇ ɴᴀᴍᴇ.</b></blockquote>\n"
-                "<blockquote><b>ᴜsᴀɢᴇ:</b> <code>/addchnl [channel_id_or_username] [anime_name]</code></blockquote>",
+                "<blockquote><b>ᴘʟᴇᴀsᴇ ᴘʀᴏᴠɪᴅᴇ ʙᴏᴛʜ ᴄʜᴀɴɴᴇʟ ID ᴀɴᴅ ᴅʀᴀᴍᴀ ɴᴀᴍᴇ.</b></blockquote>\n"
+                "<blockquote><b>ᴜsᴀɢᴇ:</b> <code>/addchnl [channel_id_or_username] [drama_name]</code></blockquote>",
                 parse_mode='html'
             )
             return
         
         channel_input = parts[0].strip()
-        anime_name = parts[1].strip()
+        drama_name = parts[1].strip()
         
         try:
             try:
@@ -984,23 +984,23 @@ def register_handlers():
             full_channel_id = int(f"-100{channel.id}")
             channel_username = getattr(channel, 'username', None)
             
-            success = await add_anime_channel(anime_name, full_channel_id, channel_username)
+            success = await add_anime_channel(drama_name, full_channel_id, channel_username)
             
             if success:
                 channel_mention = f"@{channel_username}" if channel_username else f"<code>{full_channel_id}</code>"
                 await safe_respond(
                     event,
-                    f"<blockquote><b>sᴜᴄᴄᴇssғᴜʟʟʏ sᴇᴛ ᴀɴɪᴍᴇ ᴄʜᴀɴɴᴇʟ!</b></blockquote>\n"
-                    f"<blockquote><b>ᴀɴɪᴍᴇ:</b> {anime_name}\n"
+                    f"<blockquote><b>sᴜᴄᴄᴇssғᴜʟʟʏ sᴇᴛ ᴅʀᴀᴍᴀ ᴄʜᴀɴɴᴇʟ!</b></blockquote>\n"
+                    f"<blockquote><b>ᴅʀᴀᴍᴀ:</b> {drama_name}\n"
                     f"<b>ᴄʜᴀɴɴᴇʟ:</b> {channel_mention}</blockquote>",
                     parse_mode='html'
                 )
-                logger.info(f"Added anime channel: {anime_name} -> {full_channel_id}")
+                logger.info(f"Added drama channel: {drama_name} -> {full_channel_id}")
             else:
-                await safe_respond(event, "<b><blockquote>ғᴀɪʟᴇᴅ ᴛᴏ ᴀᴅᴅ ᴀɴɪᴍᴇ ᴄʜᴀɴɴᴇʟ.</blockquote></b>", parse_mode='html')
+                await safe_respond(event, "<b><blockquote>ғᴀɪʟᴇᴅ ᴛᴏ ᴀᴅᴅ ᴅʀᴀᴍᴀ ᴄʜᴀɴɴᴇʟ.</blockquote></b>", parse_mode='html')
         
         except Exception as e:
-            logger.error(f"Error adding anime channel: {e}")
+            logger.error(f"Error adding drama channel: {e}")
             await safe_respond(
                 event, 
                 f"<blockquote><b>ᴇʀʀᴏʀ:</b> {str(e)}</blockquote>\n"
@@ -1015,35 +1015,35 @@ def register_handlers():
         
         from core.database import remove_anime_channel
         
-        anime_name = event.pattern_match.group(1)
-        if not anime_name:
+        drama_name = event.pattern_match.group(1)
+        if not drama_name:
             await safe_respond(
                 event,
-                "<blockquote><b>ᴘʟᴇᴀsᴇ ᴘʀᴏᴠɪᴅᴇ ᴀɴɪᴍᴇ ɴᴀᴍᴇ.</b>\n"
-                "<b>ᴜsᴀɢᴇ:</b> <code>/removechnl [anime_name]</code></blockquote>",
+                "<blockquote><b>ᴘʟᴇᴀsᴇ ᴘʀᴏᴠɪᴅᴇ ᴅʀᴀᴍᴀ ɴᴀᴍᴇ.</b>\n"
+                "<b>ᴜsᴀɢᴇ:</b> <code>/removechnl [drama_name]</code></blockquote>",
                 parse_mode='html'
             )
             return
         
         try:
-            success = await remove_anime_channel(anime_name)
+            success = await remove_anime_channel(drama_name)
             
             if success:
                 await safe_respond(
                     event,
-                    f"<blockquote><b>sᴜᴄᴄᴇssғᴜʟʟʏ ʀᴇᴍᴏᴠᴇᴅ ᴀɴɪᴍᴇ ᴄʜᴀɴɴᴇʟ!</b>\n"
-                    f"<b>ᴀɴɪᴍᴇ: {anime_name}</b></blockquote>",
+                    f"<blockquote><b>sᴜᴄᴄᴇssғᴜʟʟʏ ʀᴇᴍᴏᴠᴇᴅ ᴅʀᴀᴍᴀ ᴄʜᴀɴɴᴇʟ!</b>\n"
+                    f"<b>ᴅʀᴀᴍᴀ: {drama_name}</b></blockquote>",
                     parse_mode='html'
                 )
-                logger.info(f"Removed anime channel: {anime_name}")
+                logger.info(f"Removed drama channel: {drama_name}")
             else:
                 await safe_respond(
                     event,
-                    f"<blockquote><b>ᴀɴɪᴍᴇ ɴᴏᴛ ғᴏᴜɴᴅ ɪɴ ᴄʜᴀɴɴᴇʟ ʟɪsᴛ: {anime_name}</b></blockquote>",
+                    f"<blockquote><b>ᴅʀᴀᴍᴀ ɴᴏᴛ ғᴏᴜɴᴅ ɪɴ ᴄʜᴀɴɴᴇʟ ʟɪsᴛ: {drama_name}</b></blockquote>",
                     parse_mode='html'
                 )
         except Exception as e:
-            logger.error(f"Error removing anime channel: {e}")
+            logger.error(f"Error removing drama channel: {e}")
             await safe_respond(event, f"<blockquote><b>ᴇʀʀᴏʀ:</b> {str(e)}</blockquote>", parse_mode='html')
 
     @client.on(events.NewMessage(pattern='/listchnl'))
@@ -1059,25 +1059,25 @@ def register_handlers():
             if not channels:
                 await safe_respond(
                     event,
-                    "<blockquote><b>ɴᴏ ᴀɴɪᴍᴇ ᴄʜᴀɴɴᴇʟs ᴄᴏɴғɪɢᴜʀᴇᴅ ʏᴇᴛ.</b></blockquote>\n"
-                    "<blockquote><b>ᴜsᴇ</b> <code>/addchnl [channel_id] [anime_name]</code> <b>ᴛᴏ ᴀᴅᴅ ᴏɴᴇ.</b></blockquote>",
+                    "<blockquote><b>ɴᴏ ᴅʀᴀᴍᴀ ᴄʜᴀɴɴᴇʟs ᴄᴏɴғɪɢᴜʀᴇᴅ ʏᴇᴛ.</b></blockquote>\n"
+                    "<blockquote><b>ᴜsᴇ</b> <code>/addchnl [channel_id] [drama_name]</code> <b>ᴛᴏ ᴀᴅᴅ ᴏɴᴇ.</b></blockquote>",
                     parse_mode='html'
                 )
                 return
             
-            response = "<b><blockquote>Cᴏɴғɪɢᴜʀᴇᴅ Aɴɪᴍᴇ Cʜᴀɴɴᴇʟs:</blockquote></b>\n"
+            response = "<b><blockquote>Cᴏɴғɪɢᴜʀᴇᴅ Dʀᴀᴍᴀ Cʜᴀɴɴᴇʟs:</blockquote></b>\n"
             for i, item in enumerate(channels, 1):
-                anime = item.get('anime_title', 'Unknown')
+                drama = item.get('drama_title', 'Unknown')
                 ch_id = item.get('channel_id', 'N/A')
                 ch_username = item.get('channel_username', 'N/A')
                 ch_mention = f"<blockquote>@{ch_username}</blockquote>" if ch_username and ch_username != 'N/A' else f"</blockquote><code>{ch_id}</code><blockquote>"
-                response += f"<blockquote><b>{i}.</b> <i>{anime}</i>\n   ➜ {ch_mention}\n</blockquote>"
+                response += f"<blockquote><b>{i}.</b> <i>{drama}</i>\n   ➜ {ch_mention}\n</blockquote>"
             
-            response += "\n<blockquote><b>Usᴇ</b> <code>/removechnl [anime_name]</code> <b>ᴛᴏ ʀᴇᴍᴏᴠᴇ ᴀ ᴄʜᴀɴɴᴇʟ.</blockquote></b>"
+            response += "\n<blockquote><b>Usᴇ</b> <code>/removechnl [drama_name]</code> <b>ᴛᴏ ʀᴇᴍᴏᴠᴇ ᴀ ᴄʜᴀɴɴᴇʟ.</blockquote></b>"
             
             await safe_respond(event, response, parse_mode='html')
         except Exception as e:
-            logger.error(f"Error listing anime channels: {e}")
+            logger.error(f"Error listing drama channels: {e}")
             await safe_respond(event, f"<blockquote><b>ᴇʀʀᴏʀ:</b> {str(e)}</blockquote>", parse_mode='html')
 
     @client.on(events.CallbackQuery(data=b"close_menu"))
@@ -1227,7 +1227,7 @@ def register_handlers():
 
             caption_text=(
                    f"<blockquote><b>🍁 Hᴇʏ, {mention}!</b></blockquote>\n"
-                   f"<blockquote><b><i>I'ᴍ ᴀ ᴀᴜᴛᴏ ᴀɴɪᴍᴇ ʙᴏᴛ. ɪ ᴄᴀɴ ᴅᴏᴡɴʟᴏᴀᴅ ᴏɴɢᴏɪɴɢ ᴀɴᴅ ғɪɴɪsʜᴇᴅ ᴀɴɪᴍᴇ ғʀᴏᴍ ᴀɴɪᴍᴇᴘᴀʜᴇ.ʀᴜ ᴀɴᴅ ᴜᴘʟᴏᴀᴅ ᴛʜᴏsᴇ ғɪʟᴇs ᴏɴ ʏᴏᴜʀ ᴄʜᴀɴᴇʟ ᴅɪʀᴇᴄᴛʟʏ...</i></b>\n</blockquote>"
+                   f"<blockquote><b><i>I'ᴍ ᴀ ᴀᴜᴛᴏ ᴅʀᴀᴍᴀ ʙᴏᴛ. ɪ ᴄᴀɴ ᴅᴏᴡɴʟᴏᴀᴅ ᴏɴɢᴏɪɴɢ ᴀɴᴅ ғɪɴɪsʜᴇᴅ ᴅʀᴀᴍᴀ ғʀᴏᴍ ᴅʀᴀᴍᴀᴘᴀʜᴇ.ʀᴜ ᴀɴᴅ ᴜᴘʟᴏᴀᴅ ᴛʜᴏsᴇ ғɪʟᴇs ᴏɴ ʏᴏᴜʀ ᴄʜᴀɴᴇʟ ᴅɪʀᴇᴄᴛʟʏ...</i></b>\n</blockquote>"
                    f"<blockquote><b>ᴘᴏᴡᴇʀᴇᴅ ʙʏ - <a href='https://t.me/{chnl_user}'>{chnl_user}</a></blockquote></b>"
             )
             
@@ -1238,8 +1238,8 @@ def register_handlers():
             else:
                 buttons = [
                     [Button.url("𝗗𝗲𝘃𝗲𝗹𝗼𝗽𝗲𝗿", "https://t.me/KamiKaito"),
-                     Button.url("𝗠𝗮𝗶𝗻 𝗖𝗵𝗮𝗻𝗻𝗲𝗹", "https://t.me/GenAnimeOngoing")],
-                    [Button.url("𝗕𝗮𝗰𝗸𝘂𝗽 𝗖𝗵𝗮𝗻𝗻𝗲𝗹", "https://t.me/OngoingAnimeBackup")]
+                     Button.url("𝗠𝗮𝗶𝗻 𝗖𝗵𝗮𝗻𝗻𝗲𝗹", "https://t.me/KDramaMaza")],
+                    [Button.url("𝗕𝗮𝗰𝗸𝘂𝗽 𝗖𝗵𝗮𝗻𝗻𝗲𝗹", "https://t.me/KDramaMaza")]
                 ]
 
             try:
@@ -1247,7 +1247,7 @@ def register_handlers():
                     event.chat_id,
                     event,
                     f"<blockquote><b>🍁 Hᴇʏ, {mention}!</b></blockquote>\n"
-                    f"<blockquote><b><i>I'ᴍ ᴀ ᴀᴜᴛᴏ ᴀɴɪᴍᴇ ʙᴏᴛ. ɪ ᴄᴀɴ ᴅᴏᴡɴʟᴏᴀᴅ ᴏɴɢᴏɪɴɢ ᴀɴᴅ ғɪɴɪsʜᴇᴅ ᴀɴɪᴍᴇ ғʀᴏᴍ ᴀɴɪᴍᴇᴘᴀʜᴇ.ʀᴜ ᴀɴᴅ ᴜᴘʟᴏᴀᴅ ᴛʜᴏsᴇ ғɪʟᴇs ᴏɴ ʏᴏᴜʀ ᴄʜᴀɴᴇʟ ᴅɪʀᴇᴄᴛʟʏ...</i></b></blockquote>"
+                    f"<blockquote><b><i>I'ᴍ ᴀ ᴀᴜᴛᴏ ᴅʀᴀᴍᴀ ʙᴏᴛ. ɪ ᴄᴀɴ ᴅᴏᴡɴʟᴏᴀᴅ ᴏɴɢᴏɪɴɢ ᴀɴᴅ ғɪɴɪsʜᴇᴅ ᴅʀᴀᴍᴀ ғʀᴏᴍ ᴅʀᴀᴍᴀᴘᴀʜᴇ.ʀᴜ ᴀɴᴅ ᴜᴘʟᴏᴀᴅ ᴛʜᴏsᴇ ғɪʟᴇs ᴏɴ ʏᴏᴜʀ ᴄʜᴀɴᴇʟ ᴅɪʀᴇᴄᴛʟʏ...</i></b></blockquote>"
                     f"<blockquote><b>ᴘᴏᴡᴇʀᴇᴅ ʙʏ - "
                     f"<a href='https://t.me/{CHANNEL_USERNAME.lstrip('@')}'>{CHANNEL_NAME}</a>"
                     f"</b></blockquote>",
@@ -1268,13 +1268,13 @@ def register_handlers():
                 else:
                     buttons = [
                         [Button.url("𝗗𝗲𝘃𝗲𝗹𝗼𝗽𝗲𝗿", "https://t.me/KamiKaito"),
-                        Button.url("𝗠𝗮𝗶𝗻 𝗖𝗵𝗮𝗻𝗻𝗲𝗹", "https://t.me/GenAnimeOngoing")],
-                        [Button.url("𝗕𝗮𝗰𝗸𝘂𝗽 𝗖𝗵𝗮𝗻𝗻𝗲𝗹", "https://t.me/OngoingAnimeBackup")]
+                        Button.url("𝗠𝗮𝗶𝗻 𝗖𝗵𝗮𝗻𝗻𝗲𝗹", "https://t.me/KDramaMaza")],
+                        [Button.url("𝗕𝗮𝗰𝗸𝘂𝗽 𝗖𝗵𝗮𝗻𝗻𝗲𝗹", "https://t.me/KDramaMaza")]
                     ]
                 await safe_edit(
                     event,
                     f"<blockquote><b>🍁 Hᴇʏ, {mention}!</b></blockquote>\n"
-                    f"<blockquote><b><i>I'ᴍ ᴀ ᴀᴜᴛᴏ ᴀɴɪᴍᴇ ʙᴏᴛ. ɪ ᴄᴀɴ ᴅᴏᴡɴʟᴏᴀᴅ ᴏɴɢᴏɪɴɢ ᴀɴᴅ ғɪɴɪsʜᴇᴅ ᴀɴɪᴍᴇ ғʀᴏᴍ ᴀɴɪᴍᴇᴘᴀʜᴇ.ʀᴜ ᴀɴᴅ ᴜᴘʟᴏᴀᴅ ᴛʜᴏsᴇ ғɪʟᴇs ᴏɴ ʏᴏᴜʀ ᴄʜᴀɴᴇʟ ᴅɪʀᴇᴄᴛʟʏ...</i></b></blockquote>"
+                    f"<blockquote><b><i>I'ᴍ ᴀ ᴀᴜᴛᴏ ᴅʀᴀᴍᴀ ʙᴏᴛ. ɪ ᴄᴀɴ ᴅᴏᴡɴʟᴏᴀᴅ ᴏɴɢᴏɪɴɢ ᴀɴᴅ ғɪɴɪsʜᴇᴅ ᴅʀᴀᴍᴀ ғʀᴏᴍ ᴅʀᴀᴍᴀᴘᴀʜᴇ.ʀᴜ ᴀɴᴅ ᴜᴘʟᴏᴀᴅ ᴛʜᴏsᴇ ғɪʟᴇs ᴏɴ ʏᴏᴜʀ ᴄʜᴀɴᴇʟ ᴅɪʀᴇᴄᴛʟʏ...</i></b></blockquote>"
                     f"<blockquote><b>ᴘᴏᴡᴇʀᴇᴅ ʙʏ - "
                     f"<a href='https://t.me/{CHANNEL_USERNAME.lstrip('@')}'>{CHANNEL_NAME}</a>"
                     f"</b></blockquote>",
@@ -1283,7 +1283,7 @@ def register_handlers():
                 )
             except Exception as e2:
                 logger.error(f"Error sending fallback message: {e2}")
-                await event.respond("Welcome! I'm an anime bot. Type /help for more info.")
+                await event.respond("Welcome! I'm an auto drama bot. Type /help for more info.")
 
     @client.on(events.CallbackQuery(data=b"toggle_360p"))
     async def toggle_360p_callback(event):
@@ -1442,7 +1442,7 @@ def register_handlers():
         
         query = event.text.strip()
         if not query:
-            await safe_respond(event, "<b><blockquote>ᴘʟᴇᴀsᴇ ᴇɴᴛᴇʀ ᴀɴ ᴀɴɪᴍᴇ ɴᴀᴍᴇ ᴛᴏ sᴇᴀʀᴄʜ.</blockquote></b>", parse_mode='html')
+            await safe_respond(event, "<b><blockquote>ᴘʟᴇᴀsᴇ ᴇɴᴛᴇʀ ᴀ ᴅʀᴀᴍᴀ ɴᴀᴍᴇ ᴛᴏ sᴇᴀʀᴄʜ.</blockquote></b>", parse_mode='html')
             return
         
         current_time = time.time()
@@ -1459,28 +1459,28 @@ def register_handlers():
         search_msg = await safe_respond(event, f"<blockquote><b>sᴇᴀʀᴄʜɪɴɢ ғᴏʀ: {query}...</b></blockquote>", parse_mode='html')
         
         try:
-            anime_results = await search_anime(query)
-            if not anime_results:
-                await safe_edit(search_msg, "<b><blockquote>ᴀɴɪᴍᴇ ɴᴏᴛ ғᴏᴜɴᴅ.</blockquote></b>", parse_mode='html')
+            drama_results = await search_drama(query)
+            if not drama_results:
+                await safe_edit(search_msg, "<b><blockquote>ᴅʀᴀᴍᴀ ɴᴏᴛ ғᴏᴜɴᴅ.</blockquote></b>", parse_mode='html')
                 return
         except Exception as e:
-            logger.error(f"Error in anime search: {str(e)}")
+            logger.error(f"Error in drama search: {str(e)}")
             await safe_edit(search_msg, "<b><blockquote>ᴀɴ ᴇʀʀᴏʀ ᴏᴄᴄᴜʀʀᴇᴅ ᴡʜɪʟᴇ sᴇᴀʀᴄʜɪɴɢ.</blockquote></b>", parse_mode='html')
             return
         
         buttons = []
-        for i, anime in enumerate(anime_results[:10]):
+        for i, drama in enumerate(drama_results[:10]):
             buttons.append([Button.inline(
-                f"{anime['title']} ({anime['year']}) - {anime['episodes']} ᴇᴘs",
-                f"anime_{i}".encode()
+                f"{drama.get('title', drama.get('drama_title', 'Unknown'))} {drama.get('year', '')} - ᴇᴘ {drama.get('episode', '')}",
+                f"drama_{i}".encode()
             )])
         
         buttons.append([Button.inline("𝗖𝗮𝗻𝗰𝗲𝗹", b"cancel_search")])
         
-        user_state.anime_results = anime_results
+        user_state.drama_results = drama_results
         
         await safe_respond(event,
-            "<b>Sᴇᴀʀᴄʜ Rᴇsᴜʟᴛs:</b>\n<b>Sᴇʟᴇᴄᴛ ᴀɴ ᴀɴɪᴍᴇ ғʀᴏᴍ ᴛʜᴇ ʟɪsᴛ ʙᴇʟᴏᴡ:</b>",
+            "<b>Sᴇᴀʀᴄʜ Rᴇsᴜʟᴛs:</b>\n<b>Sᴇʟᴇᴄᴛ ᴀɴ ᴅʀᴀᴍᴀ ғʀᴏᴍ ᴛʜᴇ ʟɪsᴛ ʙᴇʟᴏᴡ:</b>",
             buttons=buttons,
             parse_mode='html'
         )
@@ -1510,57 +1510,57 @@ def register_handlers():
             return
         
         if data.startswith('anime_'):
-            if not user_state.anime_results:
+            if not user_state.drama_results:
                 await safe_edit(event, "<blockquote><b>ᴇxᴘɪʀᴇᴅ, sᴇɴᴅ /sᴛᴀʀᴛ ᴛᴏ ʙᴇɢɪɴ ᴀɢᴀɪɴ!</b></blockquote>", parse_mode='html')
                 return
             
             anime_index = int(data.split('_')[1])
-            if anime_index >= len(user_state.anime_results):
+            if anime_index >= len(user_state.drama_results):
                 await safe_edit(event, "<blockquote><b>ɪɴᴠᴀʟɪᴅ, sᴇɴᴅ /sᴛᴀʀᴛ ᴛᴏ ʙᴇɢɪɴ ᴀɢᴀɪɴ!</b></blockquote>", parse_mode='html')
                 return
             
-            selected_anime = user_state.anime_results[anime_index]
-            anime_session = selected_anime['session']
-            anime_title = selected_anime['title']
+            selected_anime = user_state.drama_results[anime_index]
+            drama_session = selected_anime['session']
+            drama_title = selected_anime['title']
             
             if quality_settings.batch_mode:
                 await safe_edit(event,
                     f"<blockquote><b>✦ 𝗕𝗔𝗧𝗖𝗛 𝗗𝗢𝗪𝗡𝗟𝗢𝗔𝗗 ✦</blockquote>\n"
                     f"──────────────────\n"
-                    f"<blockquote>・ Aɴɪᴍᴇ: {anime_title}\n"
+                    f"<blockquote>・ Dʀᴀᴍᴀ: {drama_title}\n"
                     f"・ Sᴛᴀᴛᴜs: ᴘʀᴏᴄᴇssɪɴɢ...</blockquote>"
                     f"──────────────────\n"
                     f"<blockquote>≡ ᴘᴏᴡᴇʀᴇᴅ ʙʏ: <a href='t.me/{channel_format}'>{CHANNEL_NAME}</a></blockquote></b>",
                     parse_mode='html'
                 )
-                success = await download_anime_batch(event, anime_session, anime_title)
+                success = await download_anime_batch(event, drama_session, drama_title)
                 if success:
-                    await safe_respond(event, f"<b>Batch download completed for:</b> <i>{anime_title}</i>", parse_mode='html')
+                    await safe_respond(event, f"<b>Batch download completed for:</b> <i>{drama_title}</i>", parse_mode='html')
                 else:
-                    await safe_respond(event, f"<b>Batch download failed for:</b> <i>{anime_title}</i>", parse_mode='html')
+                    await safe_respond(event, f"<b>Batch download failed for:</b> <i>{drama_title}</i>", parse_mode='html')
                 return
             
-            user_state.anime_session = anime_session
-            user_state.anime_title = anime_title
+            user_state.drama_session = drama_session
+            user_state.drama_title = drama_title
             user_state.total_episodes = selected_anime['episodes']
             
             await safe_edit(event,
                 f"<blockquote><b>✦ 𝗙𝗘𝗧𝗖𝗛𝗜𝗡𝗚 𝗘𝗣𝗜𝗦𝗢𝗗𝗘𝗦 ✦</blockquote>\n"
                 f"──────────────────\n"
-                f"<blockquote>・ Aɴɪᴍᴇ: {user_state.anime_title}</blockquote>\n"
+                f"<blockquote>・ Dʀᴀᴍᴀ: {user_state.drama_title}</blockquote>\n"
                 f"──────────────────\n"
                 f"<blockquote>Fᴇᴛᴄʜɪɴɢ ᴇᴘɪsᴏᴅᴇ ʟɪsᴛ...</blockquote></b>",
                 parse_mode='html'
             )
             
-            episode_data = await get_episode_list(user_state.anime_session)
+            episode_data = await get_episode_list(user_state.drama_session)
             if not episode_data or 'data' not in episode_data:
-                await safe_edit(event, "<b><blockquote>ғᴀɪʟᴇᴅ ᴛᴏ ɢᴇᴛ ᴇᴘɪsᴏᴅᴇ ʟɪsᴛ ғᴏʀ ᴀɴɪᴍᴇ</b>/blockquote>", parse_mode='html')
+                await safe_edit(event, "<b><blockquote>ғᴀɪʟᴇᴅ ᴛᴏ ɢᴇᴛ ᴇᴘɪsᴏᴅᴇ ʟɪsᴛ ғᴏʀ ᴅʀᴀᴍᴀ</b>/blockquote>", parse_mode='html')
                 return
             
             episodes = episode_data.get('data', [])
             if not episodes:
-                await safe_edit(event, "<b><blockquote>ɴᴏ ᴇᴘɪsᴏᴅᴇs ғᴏᴜɴᴅ ғᴏʀ ᴛʜɪs ᴀɴɪᴍᴇ.</blockquote></b>", parse_mode='html')
+                await safe_edit(event, "<b><blockquote>ɴᴏ ᴇᴘɪsᴏᴅᴇs ғᴏᴜɴᴅ ғᴏʀ ᴛʜɪs ᴅʀᴀᴍᴀ.</blockquote></b>", parse_mode='html')
                 return
             
             total_pages = episode_data.get('last_page', 1)
@@ -1601,7 +1601,7 @@ def register_handlers():
             await safe_edit(event,
                 f"<blockquote><b>✦ 𝗗𝗢𝗪𝗡𝗟𝗢𝗔𝗗𝗜𝗡𝗚 ✦</blockquote>\n"
                 f"──────────────────\n"
-                f"<blockquote>・ Aɴɪᴍᴇ: {user_state.anime_title}\n"
+                f"<blockquote>・ Dʀᴀᴍᴀ: {user_state.drama_title}\n"
                 f"・ Eᴘɪsᴏᴅᴇs (Pᴀɢᴇ 1/{user_state.total_pages}):</blockquote>\n"
                 f"──────────────────\n"
                 f"<blockquote>Sᴇʟᴇᴄᴛ ᴀɴ ᴇᴘɪsᴏᴅᴇ ᴛᴏ ᴅᴏᴡɴʟᴏᴀᴅ:</b></blockquote>",
@@ -1614,8 +1614,8 @@ def register_handlers():
                 action = data.split('_')[1]
                 current_page = user_state.current_page
                 total_pages = user_state.total_pages
-                anime_session = user_state.anime_session
-                anime_title = user_state.anime_title
+                drama_session = user_state.drama_session
+                drama_title = user_state.drama_title
                 episodes = user_state.episodes
                 total_episodes = len(episodes)
                 
@@ -1628,7 +1628,7 @@ def register_handlers():
                         current_batch_page -= 1
                     elif current_page > 1:
                         current_page -= 1
-                        episode_data = await get_episode_list(anime_session, current_page)
+                        episode_data = await get_episode_list(drama_session, current_page)
                         episodes = episode_data['data']
                         user_state.episodes = episodes
                         total_episodes = len(episodes)
@@ -1639,7 +1639,7 @@ def register_handlers():
                         current_batch_page += 1
                     elif current_page < total_pages:
                         current_page += 1
-                        episode_data = await get_episode_list(anime_session, current_page)
+                        episode_data = await get_episode_list(drama_session, current_page)
                         episodes = episode_data['data']
                         current_batch_page = 1
                 
@@ -1677,7 +1677,7 @@ def register_handlers():
                 await safe_edit(event,
                     f"<blockquote><b>✦ 𝗗𝗢𝗪𝗡𝗟𝗢𝗔𝗗𝗜𝗡𝗚 ✦</blockquote>\n"
                     f"──────────────────\n"
-                    f"<blockquote>・ Aɴɪᴍᴇ: {anime_title}\n"
+                    f"<blockquote>・ Dʀᴀᴍᴀ: {drama_title}\n"
                     f"・ Eᴘɪsᴏᴅᴇs (Pᴀɢᴇ {current_page}/{total_pages}):</blockquote>\n"
                     f"──────────────────\n"
                     f"<blockquote>Sᴇʟᴇᴄᴛ ᴀɴ ᴇᴘɪsᴏᴅᴇ ᴛᴏ ᴅᴏᴡɴʟᴏᴀᴅ:</blockquote>",
@@ -1700,8 +1700,8 @@ def register_handlers():
                 
                 episode_number = selected_episode['episode']
                 episode_session = selected_episode['session']
-                anime_session = user_state.anime_session
-                anime_title = user_state.anime_title
+                drama_session = user_state.drama_session
+                drama_title = user_state.drama_title
                 
                 user_state.episode_session = episode_session
                 user_state.episode_number = episode_number
@@ -1709,13 +1709,13 @@ def register_handlers():
                 await safe_edit(event,
                     f"<blockquote><b>✦ 𝗗𝗢𝗪𝗡𝗟𝗢𝗔𝗗𝗜𝗡𝗚 ✦</blockquote>\n"
                     f"──────────────────\n"
-                    f"<blockquote>・ Aɴɪᴍᴇ: {anime_title}\n"
+                    f"<blockquote>・ Dʀᴀᴍᴀ: {drama_title}\n"
                     f"・ Eᴘɪsᴏᴅᴇ: {episode_number} - {selected_episode['title']}\n"
                     f"・ Sᴛᴀᴛᴜs: ғᴇᴛᴄʜɪɴɢ ᴅᴏᴡɴʟᴏᴀᴅ ʟɪɴᴋs...</b></blockquote>",
                     parse_mode='html'
                 )
                 
-                download_links = get_download_links(anime_session, episode_session)
+                download_links = get_download_links(drama_session, episode_session)
                 if not download_links:
                     await safe_edit(event, "<b><blockquote>ɴᴏ ᴅᴏᴡɴʟᴏᴀᴅ ʟɪɴᴋs ғᴏᴜɴᴅ ғᴏʀ ᴛʜɪs ᴇᴘɪsᴏᴅᴇ.</blockquote></b>", parse_mode='html')
                     return
@@ -1734,7 +1734,7 @@ def register_handlers():
                 await safe_edit(event,
                     f"<blockquote><b>✦ 𝗗𝗢𝗪𝗡𝗟𝗢𝗔𝗗𝗜𝗡𝗚 ✦</blockquote>\n"
                     f"──────────────────\n"
-                    f"<blockquote>・ Aɴɪᴍᴇ: {anime_title}\n"
+                    f"<blockquote>・ Dʀᴀᴍᴀ: {drama_title}\n"
                     f"・ Eᴘɪsᴏᴅᴇ: {episode_number} - {selected_episode['title']}</blockquote>\n"
                     f"──────────────────\n"
                     f"<blockquote>Sᴇʟᴇᴄᴛ ᴅᴏᴡɴʟᴏᴀᴅ ǫᴜᴀʟɪᴛʏ:</blockqute></b>",
@@ -1755,12 +1755,12 @@ def register_handlers():
                 return
             
             selected_quality = download_links[quality_index]
-            anime_session = user_state.anime_session
-            anime_title = user_state.anime_title
+            drama_session = user_state.drama_session
+            drama_title = user_state.drama_title
             episode_number = user_state.episode_number
             episode_session = user_state.episode_session
             
-            await download_episode(event, anime_title, anime_session, episode_number, episode_session, selected_quality)
+            await download_episode(event, drama_title, drama_session, episode_number, episode_session, selected_quality)
         
             error_msg_fk='''<blockquote><b>ᴏᴘᴇʀᴀᴛɪᴏɴ ᴄᴀɴᴄᴇʟᴇᴅ, sᴇɴᴅ /sᴛᴀʀᴛ ᴛᴏ ʙᴇɢɪɴ ᴀɢᴀɪɴ!</b></blockquote>'''
 
@@ -1805,7 +1805,7 @@ async def request_command(event):
         request_text = event.pattern_match.group(1).strip()
         
         if not request_text:
-            await safe_respond(event, "<blockquote><b>ᴘʟᴇᴀsᴇ ᴘʀᴏᴠɪᴅᴇ ᴀɴɪᴍᴇ ɴᴀᴍᴇ ᴛᴏ ʀᴇǫᴜᴇsᴛ.</b>\n<i>ᴇxᴀᴍᴘʟᴇ: /request Jujutsu Kaisen</i></blockquote>", parse_mode='html')
+            await safe_respond(event, "<blockquote><b>ᴘʟᴇᴀsᴇ ᴘʀᴏᴠɪᴅᴇ ᴅʀᴀᴍᴀ ɴᴀᴍᴇ ᴛᴏ ʀᴇǫᴜᴇsᴛ.</b>\n<i>ᴇxᴀᴍᴘʟᴇ: /request Jujutsu Kaisen</i></blockquote>", parse_mode='html')
             return
         
         user_id = event.sender_id
@@ -1830,7 +1830,7 @@ async def request_command(event):
             await safe_respond(
                 event,
                 f"<blockquote><b>✦ ʀᴇǫᴜᴇsᴛ ᴀᴄᴄᴇᴘᴛᴇᴅ ✦</b>\n\n"
-                f"<b>Aɴɪᴍᴇ:</b> {request_text}\n"
+                f"<b>Dʀᴀᴍᴀ:</b> {request_text}\n"
                 f"<b>Usᴇʀ:</b> @{username}\n"
                 f"<b>Sᴛᴀᴛᴜs:</b> ᴘᴇɴᴅɪɴɢ\n\n"
                 f"<i>ʏᴏᴜʀ ʀᴇǫᴜᴇsᴛ ᴡɪʟʟ ʙᴇ ᴘʀᴏᴄᴇssᴇᴅ ᴅᴜʀɪɴɢ ᴅᴀɪʟʏ ʙᴀᴛᴄʜ ᴘʀᴏᴄᴇssɪɴɢ.</i></blockquote>",
@@ -1877,7 +1877,7 @@ async def request_pattern_handler(event):
         request_text = event.pattern_match.group(1).strip()
         
         if not request_text:
-            await safe_respond(event, "<blockquote><b>ᴘʟᴇᴀsᴇ ᴘʀᴏᴠɪᴅᴇ ᴀɴɪᴍᴇ ɴᴀᴍᴇ ᴛᴏ ʀᴇǫᴜᴇsᴛ.</b>\n<i>ᴇxᴀᴍᴘʟᴇ: *request Jujutsu Kaisen</i></blockquote>", parse_mode='html')
+            await safe_respond(event, "<blockquote><b>ᴘʟᴇᴀsᴇ ᴘʀᴏᴠɪᴅᴇ ᴅʀᴀᴍᴀ ɴᴀᴍᴇ ᴛᴏ ʀᴇǫᴜᴇsᴛ.</b>\n<i>ᴇxᴀᴍᴘʟᴇ: *request Jujutsu Kaisen</i></blockquote>", parse_mode='html')
             return
 
         user_id = event.sender_id
@@ -1902,7 +1902,7 @@ async def request_pattern_handler(event):
             await safe_respond(
                 event,
                 f"<blockquote><b>✦ ʀᴇǫᴜᴇsᴛ ᴀᴄᴄᴇᴘᴛᴇᴅ ✦</b>\n\n"
-                f"<b>Aɴɪᴍᴇ:</b> {request_text}\n"
+                f"<b>Dʀᴀᴍᴀ:</b> {request_text}\n"
                 f"<b>Usᴇʀ:</b> @{username}\n"
                 f"<b>Sᴛᴀᴛᴜs:</b> ᴘᴇɴᴅɪɴɢ\n\n"
                 f"<i>ʏᴏᴜʀ ʀᴇǫᴜᴇsᴛ ᴡɪʟʟ ʙᴇ ᴘʀᴏᴄᴇssᴇᴅ ᴅᴜʀɪɴɢ ᴅᴀɪʟʏ ʙᴀᴛᴄʜ ᴘʀᴏᴄᴇssɪɴɢ.</i></blockquote>",
