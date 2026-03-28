@@ -17,12 +17,12 @@ from telethon.tl.types import PeerChannel
 from core.config import *
 from core.client import client, FFMPEG_AVAILABLE, pyro_client, PYROFORK_AVAILABLE
 from core.state import (
-    quality_settings, bot_settings, auto_download_state, anime_queue
+    quality_settings, bot_settings, auto_download_state, drama_queue
 )
 from core.utils import (
     sanitize_filename, format_filename, format_size, format_speed, format_time,
-    get_fixed_thumbnail, get_anime_hashtag, mark_banner_posted,
-    is_episode_processed, update_processed_qualities, mark_episode_processed,
+    get_fixed_thumbnail, get_drama_hashtag, mark_banner_posted,
+    is_episode_processed, mark_episode_processed,
     ProgressMessage, UploadProgressBar, safe_respond, safe_send_message,
     generate_batch_link
 )
@@ -339,7 +339,7 @@ async def post_anime_to_dedicated_channel(client, anime_title, anime_info, episo
         english_title = anime_info.get('title', {}).get('english') or anime_info.get('title', {}).get('romaji')
         romaji_title = anime_info.get('title', {}).get('romaji')
         
-        hashtag = get_anime_hashtag(anime_title)
+        hashtag = get_drama_hashtag(anime_title)
         
         main_channel_username = (CHANNEL_USERNAME or BOT_USERNAME).lstrip('@')
         
@@ -457,7 +457,7 @@ async def post_anime_to_dedicated_channel(client, anime_title, anime_info, episo
 async def _post_fallback_message(client, anime_title, episode_number, audio_type, quality_files):
     try:
         main_channel_username = (CHANNEL_USERNAME or BOT_USERNAME).lstrip('@')
-        hashtag = get_anime_hashtag(anime_title)
+        hashtag = get_drama_hashtag(anime_title)
         qualities_str = " | ".join(quality_files.keys()) if quality_files else "N/A"
         
         caption = (
@@ -582,7 +582,7 @@ async def post_anime_with_buttons(client, anime_title, anime_info, episode_numbe
         english_title = title_info.get('english') or title_info.get('romaji') or anime_title
         romaji_title = title_info.get('romaji') or anime_title
         
-        hashtag = get_anime_hashtag(anime_title)
+        hashtag = get_drama_hashtag(anime_title)
         
         main_channel_username = (CHANNEL_USERNAME or BOT_USERNAME).lstrip('@')
         
@@ -901,7 +901,7 @@ async def post_anime_batch_with_buttons(client, anime_title, anime_info, quality
         english_title = title_info.get('english') or title_info.get('romaji') or anime_title
         romaji_title = title_info.get('romaji') or anime_title
         
-        hashtag = get_anime_hashtag(anime_title)
+        hashtag = get_drama_hashtag(anime_title)
         
         main_channel_username = (CHANNEL_USERNAME or BOT_USERNAME).lstrip('@')
         total_episodes = 0
@@ -1025,7 +1025,7 @@ async def post_anime_batch_with_buttons(client, anime_title, anime_info, quality
 async def _post_batch_fallback(client, anime_title, quality_files, episode_number=None, audio_type=None):
     try:
         main_channel_username = (CHANNEL_USERNAME or BOT_USERNAME).lstrip('@')
-        hashtag = get_anime_hashtag(anime_title)
+        hashtag = get_drama_hashtag(anime_title)
         
         total_episodes = 0
         if quality_files:
