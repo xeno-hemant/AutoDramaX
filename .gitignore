@@ -1,0 +1,48 @@
+# Environment & secrets
+.env
+*.env
+
+# Python cache
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+*.pyc
+
+# Virtual environments
+venv/
+env/
+.venv/
+
+# Download directory (large files)
+downloads/
+download/
+*.mkv
+*.mp4
+*.avi
+
+# Session files (Telethon/Pyrogram) - DO NOT commit these
+*.session
+*.session-journal
+DramaMaza.session
+DramaMaza.session-journal
+
+# Logs
+*.log
+logs/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Temp files
+*.tmp
+*.temp
+fix_scheduler.py
