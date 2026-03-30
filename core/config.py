@@ -86,7 +86,7 @@ ADMINS = get_admins_from_env()
 OWNER_ID = ADMINS[0]
 
 CHANNEL_ID = get_env_var("CHANNEL_ID", "-1003748655987", required=False)
-CHANNEL_NAME = get_env_var("CHANNEL_NAME", "𝖠ɴɪ𝖶ᴇʙ 𝖲ʜᴏɢᴜɴᴀᴛᴇ", required=False)
+CHANNEL_NAME = get_env_var("CHANNEL_NAME", "Dramax 𝗖𝗼𝗺𝗺𝘂𝗻𝗶𝘁𝘆", required=False)
 CHANNEL_USERNAME = get_env_var("CHANNEL_USERNAME", "@testautoshit", required=False)
 
 DUMP_CHANNEL_ID = get_env_var("DUMP_CHANNEL_ID", "-1003558271224", required=False)
@@ -197,4 +197,4 @@ HELP_TEXT = '''<b>
 <code>/add_admin [user_id]</code> - ᴀᴅᴅ ᴀ ɴᴇᴡ ᴀᴅᴍɪɴ
 <code>/remove_admin [user_id]</code> - ʀᴇᴍᴏᴠᴇ ᴀɴ ᴀᴅᴍɪɴ</blockquote expandable>
 ──────────────────
-<blockquote>≡ ᴘᴏᴡᴇʀᴇᴅ ʙʏ: <a href='t.me/aniweb_shogunate'>𝖠ɴɪ𝖶ᴇʙ 𝖲ʜᴏɢᴜɴᴀᴛᴇ</a></blockquote></b>'''
+<blockquote>≡ ᴘᴏᴡᴇʀᴇᴅ ʙʏ: <a href='t.me/dramax_Community'>Dramax 𝗖𝗼𝗺𝗺𝘂𝗻𝗶𝘁𝘆</a></blockquote></b>'''

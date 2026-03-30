@@ -681,7 +681,7 @@ async def check_for_new_episodes(client):
             logger.error(f"Error checking for new episodes: {str(e)}")
             if progress:
                 await progress.update(
-                    f"<b><blockquote>ᴇʀʀᴏʀ ᴘʀᴏᴄᴇssɪɴɢ ᴀɴɪᴍᴇ:</b> {str(e)}</blockquote>",
+                    f"<b><blockquote>ᴇʀʀᴏʀ ᴘʀᴏᴄᴇssɪɴɢ Drama:</b> {str(e)}</blockquote>",
                     parse_mode='html'
                 )
 

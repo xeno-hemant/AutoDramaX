@@ -302,16 +302,16 @@ async def robust_upload_file(
     return None
 
 
-async def post_anime_to_dedicated_channel(client, drama_title, drama_info, episode_number, audio_type, quality_files, dedicated_channel_id, dedicated_channel_username):
-    from core.database import get_anime_channel
+async def post_drama_to_dedicated_channel(client, drama_title, drama_info, episode_number, audio_type, quality_files, dedicated_channel_id, dedicated_channel_username):
+    from core.database import get_drama_channel
 
     try:
-        anime_id = drama_info.get('id')
-        if not anime_id:
+        drama_id = drama_info.get('id')
+        if not drama_id:
             logger.error(f"No drama ID found for {drama_title}")
             return None
         
-        banner_url = f"https://img.anili.st/media/{anime_id}"
+        banner_url = f"https://image.tmdb.org/t/p/original/{drama_id}"
         banner_path = os.path.join(THUMBNAIL_DIR, f"{sanitize_filename(drama_title)}_banner_dedicated.jpg")
 
         banner_downloaded = False
@@ -352,7 +352,7 @@ async def post_anime_to_dedicated_channel(client, drama_title, drama_info, episo
             f"<b>➥ Quality: {qualities_str}</b>\n"
             f"<b>➥ Audio: {audio_type}</b></blockquote>\n"
             f"<b>━━━━━━━━━━━━━━━━━━━━━</b>\n"
-            f"<b><blockquote>≡ ᴘᴏᴡᴇʀᴇᴅ ʙʏ: <a href='t.me/{main_channel_username}'>𝖠ɴɪ𝖶ᴇʙ 𝖲ʜᴏɢᴜɴᴀᴛᴇ</a></blockquote></b>"
+            f"<b><blockquote>≡ ᴘᴏᴡᴇʀᴇᴅ ʙʏ: <a href='t.me/{main_channel_username}'>Dramax 𝗖𝗼𝗺𝗺𝘂𝗻𝗶𝘁𝘆</a></blockquote></b>"
         )
         
         buttons = []
@@ -406,7 +406,7 @@ async def post_anime_to_dedicated_channel(client, drama_title, drama_info, episo
                     f"<b>➥ Quality: {qualities_str}</b>\n"
                     f"<b>➥ Audio: {audio_type}</b></blockquote>\n"
                     f"<b>━━━━━━━━━━━━━━━━━━━━━</b>\n"
-                    f"<b><blockquote>≡ ᴘᴏᴡᴇʀᴇᴅ ʙʏ: <a href='t.me/{main_channel_username}'>𝖠ɴɪ𝖶ᴇʙ 𝖲ʜᴏɢᴜɴᴀᴛᴇ</a></blockquote></b>"
+                    f"<b><blockquote>≡ ᴘᴏᴡᴇʀᴇᴅ ʙʏ: <a href='t.me/{main_channel_username}'>Dramax 𝗖𝗼𝗺𝗺𝘂𝗻𝗶𝘁𝘆</a></blockquote></b>"
                 )
                 
                 join_button = Button.url("𝗗𝗼𝘄𝗻𝗹𝗼𝗮𝗱 𝗡𝗼𝘄", f"https://t.me/{dedicated_channel_username}" if dedicated_channel_username else "")
@@ -467,7 +467,7 @@ async def _post_fallback_message(client, drama_title, episode_number, audio_type
             f"<b>➥ Quality: {qualities_str}</b>\n"
             f"<b>➥ Audio: {audio_type}</b></blockquote>\n"
             f"<b>━━━━━━━━━━━━━━━━━━━━━</b>\n"
-            f"<b><blockquote>≡ ᴘᴏᴡᴇʀᴇᴅ ʙʏ: <a href='t.me/{main_channel_username}'>𝖠ɴɪ𝖶ᴇʙ 𝖲ʜᴏɢᴜɴᴀᴛᴇ</a></blockquote></b>"
+            f"<b><blockquote>≡ ᴘᴏᴡᴇʀᴇᴅ ʙʏ: <a href='t.me/{main_channel_username}'>Dramax 𝗖𝗼𝗺𝗺𝘂𝗻𝗶𝘁𝘆</a></blockquote></b>"
         )
         
         buttons = []
@@ -513,15 +513,15 @@ async def _post_fallback_message(client, drama_title, episode_number, audio_type
 
 
 async def post_drama_with_buttons(client, drama_title, drama_info, episode_number, audio_type, quality_files):
-    from core.database import get_anime_channel
+    from core.database import get_drama_channel
     
     try:
         try:
-            anime_channel = await get_anime_channel(drama_title)
-            if anime_channel:
-                dedicated_channel_id = anime_channel.get('channel_id')
-                dedicated_channel_username = anime_channel.get('channel_username')
-                return await post_anime_to_dedicated_channel(
+            drama_channel = await get_drama_channel(drama_title)
+            if drama_channel:
+                dedicated_channel_id = drama_channel.get('channel_id')
+                dedicated_channel_username = drama_channel.get('channel_username')
+                return await post_drama_to_dedicated_channel(
                     client, drama_title, drama_info, episode_number, audio_type, 
                     quality_files, dedicated_channel_id, dedicated_channel_username
                 )
@@ -536,8 +536,8 @@ async def post_drama_with_buttons(client, drama_title, drama_info, episode_numbe
             logger.warning(f"No drama info available for {drama_title}, posting with fallback")
             return await _post_fallback_message(client, drama_title, episode_number, audio_type, quality_files)
         
-        anime_id = drama_info.get('id')
-        if not anime_id:
+        drama_id = drama_info.get('id')
+        if not drama_id:
             logger.warning(f"No drama ID found for {drama_title}, posting with fallback")
             return await _post_fallback_message(client, drama_title, episode_number, audio_type, quality_files)
     except Exception as e:
@@ -552,7 +552,7 @@ async def post_drama_with_buttons(client, drama_title, drama_info, episode_numbe
     
     banner_path = None
     try:
-        banner_url = f"https://img.anili.st/media/{anime_id}"
+        banner_url = f"https://image.tmdb.org/t/p/original/{drama_id}"
         
         banner_path = os.path.join(THUMBNAIL_DIR, f"{sanitize_filename(drama_title)}_banner.jpg")
         
@@ -594,7 +594,7 @@ async def post_drama_with_buttons(client, drama_title, drama_info, episode_numbe
             f"<b>➥ Quality: {qualities_str}</b>\n"
             f"<b>➥ Audio: {audio_type}</b></blockquote>\n"
             f"<b>━━━━━━━━━━━━━━━━━━━━━</b>\n"
-            f"<b><blockquote>≡ ᴘᴏᴡᴇʀᴇᴅ ʙʏ: <a href='t.me/{main_channel_username}'>𝖠ɴɪ𝖶ᴇʙ 𝖲ʜᴏɢᴜɴᴀᴛᴇ</a></blockquote></b>"
+            f"<b><blockquote>≡ ᴘᴏᴡᴇʀᴇᴅ ʙʏ: <a href='t.me/{main_channel_username}'>Dramax 𝗖𝗼𝗺𝗺𝘂𝗻𝗶𝘁𝘆</a></blockquote></b>"
         )
 
         buttons = []
@@ -861,8 +861,8 @@ async def post_drama_batch_with_buttons(client, drama_title, drama_info, quality
             logger.warning(f"No drama info for batch post of {drama_title}")
             return await _post_batch_fallback(client, drama_title, quality_files)
         
-        anime_id = drama_info.get('id')
-        if not anime_id:
+        drama_id = drama_info.get('id')
+        if not drama_id:
             logger.warning(f"No drama ID found for {drama_title}")
             return await _post_batch_fallback(client, drama_title, quality_files)
     except Exception as e:
@@ -871,7 +871,7 @@ async def post_drama_batch_with_buttons(client, drama_title, drama_info, quality
     
     banner_path = None
     try:
-        banner_url = f"https://img.anili.st/media/{anime_id}"
+        banner_url = f"https://image.tmdb.org/t/p/original/{drama_id}"
         
         banner_path = os.path.join(THUMBNAIL_DIR, f"{sanitize_filename(drama_title)}_banner.jpg")
         
@@ -918,7 +918,7 @@ async def post_drama_batch_with_buttons(client, drama_title, drama_info, quality
             f"<b>➥ Quality: {qualities_str}</b>\n"
             f"<b>➥ Audio: {audio_str}</b></blockquote>\n"
             f"<b>━━━━━━━━━━━━━━━━━━━━━</b>\n"
-            f"<b><blockquote>≡ ᴘᴏᴡᴇʀᴇᴅ ʙʏ: <a href='t.me/{main_channel_username}'>𝖠ɴɪ𝖶ᴇʙ 𝖲ʜᴏɢᴜɴᴀᴛᴇ</a></blockquote></b>"
+            f"<b><blockquote>≡ ᴘᴏᴡᴇʀᴇᴅ ʙʏ: <a href='t.me/{main_channel_username}'>Dramax 𝗖𝗼𝗺𝗺𝘂𝗻𝗶𝘁𝘆</a></blockquote></b>"
         )
 
         buttons = []
@@ -1045,7 +1045,7 @@ async def _post_batch_fallback(client, drama_title, quality_files, episode_numbe
             f"<b>➥ Quality: {qualities_str}</b>\n"
             f"<b>➥ Audio: {audio_str}</b></blockquote>\n"
             f"<b>━━━━━━━━━━━━━━━━━━━━━</b>\n"
-            f"<b><blockquote>≡ ᴘᴏᴡᴇʀᴇᴅ ʙʏ: <a href='t.me/{main_channel_username}'>𝖠ɴɪ𝖶ᴇʙ 𝖲ʜᴏɢᴜɴᴀᴛᴇ</a></blockquote></b>"
+            f"<b><blockquote>≡ ᴘᴏᴡᴇʀᴇᴅ ʙʏ: <a href='t.me/{main_channel_username}'>Dramax 𝗖𝗼𝗺𝗺𝘂𝗻𝗶𝘁𝘆</a></blockquote></b>"
         )
         
         buttons = []
@@ -1079,7 +1079,7 @@ async def _post_batch_fallback(client, drama_title, quality_files, episode_numbe
 
 
 
-async def download_anime_batch(event, drama_session, drama_title):
+async def download_drama_batch(event, drama_session, drama_title):
     logger.info(f"Starting batch download for {drama_title}")
     channel_format = (CHANNEL_USERNAME or BOT_USERNAME).lstrip('@')
     try:

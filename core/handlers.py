@@ -762,19 +762,19 @@ def register_handlers():
         try:
             status_msg = await safe_respond(event, "<blockquote><b>ғᴇᴛᴄʜɪɴɢ ʟᴀᴛᴇsᴛ ᴅʀᴀᴍᴀ ʟɪsᴛ...</blockquote></b>", parse_mode='html')
             
-            API_URL = "https://animepahe.si/api?m=airing&page=1"
+            API_URL = "https://dramapahe.si/api?m=airing&page=1"
             async with aiohttp.ClientSession() as session:
                 async with session.get(API_URL, headers=HEADERS) as response:
                     if response.status == 200:
                         data = await response.json()
-                        anime_list = data.get('data', [])
+                        drama_list = data.get('data', [])
                         
-                        if not anime_list:
+                        if not drama_list:
                             await status_msg.edit("<blockquote><b>ɴᴏ ʟᴀᴛᴇsᴛ ᴅʀᴀᴍᴀ ᴀᴠᴀɪʟᴀʙʟᴇ ᴀᴛ ᴛʜᴇ ᴍᴏᴍᴇɴᴛ.</b></blockquote>", parse_mode='html')
                             return
                         
-                        latest_anime_text = "<blockquote><b>Lᴀᴛᴇsᴛ Aɪʀɪɴɢ Dʀᴀᴍᴀ:</b></blockquote>\n"
-                        for idx, drama in enumerate(anime_list[:10], start=1):
+                        latest_drama_text = "<blockquote><b>Lᴀᴛᴇsᴛ Aɪʀɪɴɢ Dʀᴀᴍᴀ:</b></blockquote>\n"
+                        for idx, drama in enumerate(drama_list[:10], start=1):
                             title = drama.get('drama_title', 'Unknown Title')
                             drama_session = drama.get('drama_session', '')
                             episode = drama.get('episode', 'N/A')
@@ -804,24 +804,24 @@ def register_handlers():
                     if response.status == 200:
                         html = await response.text()
                         soup = BeautifulSoup(html, "html.parser")
-                        anime_list = soup.select(".index-wrapper .index a")
+                        drama_list = soup.select(".index-wrapper .index a")
                         
-                        if not anime_list:
+                        if not drama_list:
                             await status_msg.edit("<blockquote><b>ɴᴏ ᴀɪʀɪɴɢ ᴅʀᴀᴍᴀ ᴀᴠᴀɪʟᴀʙʟᴇ ᴀᴛ ᴛʜᴇ ᴍᴏᴍᴇɴᴛ.</b></blockquote>", parse_mode='html')
                             return
                         
-                        airing_anime_text = "<blockquote><b>Cᴜʀʀᴇɴᴛʟʏ Aɪʀɪɴɢ Dʀᴀᴍᴀ:</b></blockquote>\n"
-                        for idx, drama in enumerate(anime_list[:15], start=1):
+                        airing_drama_text = "<blockquote><b>Cᴜʀʀᴇɴᴛʟʏ Aɪʀɪɴɢ Dʀᴀᴍᴀ:</b></blockquote>\n"
+                        for idx, drama in enumerate(drama_list[:15], start=1):
                             title = drama.get("title", "Unknown Title")
                             href = drama.get("href", "")
                             
                             if href:
-                                link = f"https://animepahe.si{href}"
-                                airing_anime_text += f"<blockquote><b>{idx}. <a href='{link}'>{title}</a></b></blockquote>\n"
+                                link = f"https://dramapahe.si{href}"
+                                airing_drama_text += f"<blockquote><b>{idx}. <a href='{link}'>{title}</a></b></blockquote>\n"
                             else:
-                                airing_anime_text += f"<blockquote><b>{idx}. {title}</b></blockquote>\n"
+                                airing_drama_text += f"<blockquote><b>{idx}. {title}</b></blockquote>\n"
                         
-                        await status_msg.edit(airing_anime_text, parse_mode='html', link_preview=False)
+                        await status_msg.edit(airing_drama_text, parse_mode='html', link_preview=False)
                     else:
                         await status_msg.edit(f"<blockquote><b>ғᴀɪʟᴇᴅ ᴛᴏ ғᴇᴛᴄʜ ᴅᴀᴛᴀ.</b> <i>sᴛᴀᴛᴜs ᴄᴏᴅᴇ: {response.status}</i></blockquote>", parse_mode='html')
         
@@ -839,25 +839,25 @@ def register_handlers():
             try:
                 status_msg = await safe_respond(event, "<blockquote><b>ғᴇᴛᴄʜɪɴɢ ʟᴀᴛᴇsᴛ ᴅʀᴀᴍᴀ ʟɪsᴛ...</blockquote></b>", parse_mode='html')
                 
-                API_URL = "https://animepahe.si/api?m=airing&page=1"
+                API_URL = "https://dramapahe.si/api?m=airing&page=1"
                 async with aiohttp.ClientSession() as session:
                     async with session.get(API_URL, headers=HEADERS) as response:
                         if response.status == 200:
                             data = await response.json()
-                            anime_list = data.get('data', [])
+                            drama_list = data.get('data', [])
                             
-                            if not anime_list:
+                            if not drama_list:
                                 await status_msg.edit("<blockquote><b>ɴᴏ ʟᴀᴛᴇsᴛ ᴅʀᴀᴍᴀ ᴀᴠᴀɪʟᴀʙʟᴇ ᴀᴛ ᴛʜᴇ ᴍᴏᴍᴇɴᴛ.</b></blockquote>", parse_mode='html')
                                 return
                             
-                            latest_anime_text = "<blockquote><b>Lᴀᴛᴇsᴛ Aɪʀɪɴɢ Dʀᴀᴍᴀ:</b></blockquote>\n"
-                            for idx, drama in enumerate(anime_list[:10], start=1):
+                            latest_drama_text = "<blockquote><b>Lᴀᴛᴇsᴛ Aɪʀɪɴɢ Dʀᴀᴍᴀ:</b></blockquote>\n"
+                            for idx, drama in enumerate(drama_list[:10], start=1):
                                 title = drama.get('drama_title', 'Unknown Title')
                                 episode = drama.get('episode', 'N/A')
-                                latest_anime_text += f"<blockquote><b>{idx}. {title} [E{episode}]</b></blockquote>\n"
+                                latest_drama_text += f"<blockquote><b>{idx}. {title} [E{episode}]</b></blockquote>\n"
                             
-                            latest_anime_text += "\n<b><blockquote>ᴜsᴇ /redownload [number] ᴛᴏ ғᴏʀᴄᴇ ʀᴇᴅᴏᴡɴʟᴏᴀᴅ ᴀ sᴘᴇᴄɪғɪᴄ ᴅʀᴀᴍᴀ.</b></blockquote>"
-                            await status_msg.edit(latest_anime_text, parse_mode='html', link_preview=False)
+                            latest_drama_text += "\n<b><blockquote>ᴜsᴇ /redownload [number] ᴛᴏ ғᴏʀᴄᴇ ʀᴇᴅᴏᴡɴʟᴏᴀᴅ ᴀ sᴘᴇᴄɪғɪᴄ ᴅʀᴀᴍᴀ.</b></blockquote>"
+                            await status_msg.edit(latest_drama_text, parse_mode='html', link_preview=False)
                         else:
                             await status_msg.edit(f"<b><blockquote>ғᴀɪʟᴇᴅ ᴛᴏ ғᴇᴛᴄʜ ᴅᴀᴛᴀ.\nsᴛᴀᴛᴜs ᴄᴏᴅᴇ: {response.status}</b></blockquote>", parse_mode='html')
             except Exception as e:
@@ -890,25 +890,25 @@ def register_handlers():
             try:
                 status_msg = await safe_respond(event, "<blockquote><b>ғᴇᴛᴄʜɪɴɢ ʟᴀᴛᴇsᴛ ᴅʀᴀᴍᴀ ʟɪsᴛ...</blockquote></b>", parse_mode='html')
                 
-                API_URL = "https://animepahe.si/api?m=airing&page=1"
+                API_URL = "https://dramapahe.si/api?m=airing&page=1"
                 async with aiohttp.ClientSession() as session:
                     async with session.get(API_URL, headers=HEADERS) as response:
                         if response.status == 200:
                             data = await response.json()
-                            anime_list = data.get('data', [])
+                            drama_list = data.get('data', [])
                             
-                            if not anime_list:
+                            if not drama_list:
                                 await status_msg.edit("<blockquote><b>ɴᴏ ʟᴀᴛᴇsᴛ ᴅʀᴀᴍᴀ ᴀᴠᴀɪʟᴀʙʟᴇ ᴀᴛ ᴛʜᴇ ᴍᴏᴍᴇɴᴛ.</b></blockquote>", parse_mode='html')
                                 return
                             
-                            latest_anime_text = "<blockquote><b>Lᴀᴛᴇsᴛ Aɪʀɪɴɢ Dʀᴀᴍᴀ:</b></blockquote>\n"
-                            for idx, drama in enumerate(anime_list[:10], start=1):
+                            latest_drama_text = "<blockquote><b>Lᴀᴛᴇsᴛ Aɪʀɪɴɢ Dʀᴀᴍᴀ:</b></blockquote>\n"
+                            for idx, drama in enumerate(drama_list[:10], start=1):
                                 title = drama.get('drama_title', 'Unknown Title')
                                 episode = drama.get('episode', 'N/A')
-                                latest_anime_text += f"<blockquote><b>{idx}. {title} [E{episode}]</b></blockquote>\n"
+                                latest_drama_text += f"<blockquote><b>{idx}. {title} [E{episode}]</b></blockquote>\n"
                             
-                            latest_anime_text += "\n<b><blockquote>ᴜsᴇ /redownload [number] ᴛᴏ ғᴏʀᴄᴇ ʀᴇᴅᴏᴡɴʟᴏᴀᴅ ᴀ sᴘᴇᴄɪғɪᴄ ᴅʀᴀᴍᴀ.</b></blockquote>"
-                            await status_msg.edit(latest_anime_text, parse_mode='html', link_preview=False)
+                            latest_drama_text += "\n<b><blockquote>ᴜsᴇ /redownload [number] ᴛᴏ ғᴏʀᴄᴇ ʀᴇᴅᴏᴡɴʟᴏᴀᴅ ᴀ sᴘᴇᴄɪғɪᴄ ᴅʀᴀᴍᴀ.</b></blockquote>"
+                            await status_msg.edit(latest_drama_text, parse_mode='html', link_preview=False)
                         else:
                             await status_msg.edit(f"<b><blockquote>ғᴀɪʟᴇᴅ ᴛᴏ ғᴇᴛᴄʜ ᴅᴀᴛᴀ.\nsᴛᴀᴛᴜs ᴄᴏᴅᴇ: {response.status}</b></blockquote>", parse_mode='html')
             except Exception as e:
@@ -932,11 +932,11 @@ def register_handlers():
             status_msg = await safe_respond(event, f"<blockquote><b>ᴇʀʀᴏʀ: </b> {str(e)}</blockquote>", parse_mode='html')
 
     @client.on(events.NewMessage(pattern=r'^/(addchnl|addchannel)(?:\s+(.+))?$'))
-    async def add_anime_channel_handler(event):
+    async def add_drama_channel_handler(event):
         if not is_admin(event.chat_id):
             return
         
-        from core.database import add_anime_channel
+        from core.database import add_drama_channel
         
         text = event.pattern_match.group(2)
         if not text:
@@ -984,7 +984,7 @@ def register_handlers():
             full_channel_id = int(f"-100{channel.id}")
             channel_username = getattr(channel, 'username', None)
             
-            success = await add_anime_channel(drama_name, full_channel_id, channel_username)
+            success = await add_drama_channel(drama_name, full_channel_id, channel_username)
             
             if success:
                 channel_mention = f"@{channel_username}" if channel_username else f"<code>{full_channel_id}</code>"
@@ -1009,11 +1009,11 @@ def register_handlers():
             )
 
     @client.on(events.NewMessage(pattern=r'^/removechnl(?:\s+(.+))?$'))
-    async def remove_anime_channel_handler(event):
+    async def remove_drama_channel_handler(event):
         if not is_admin(event.chat_id):
             return
         
-        from core.database import remove_anime_channel
+        from core.database import remove_drama_channel
         
         drama_name = event.pattern_match.group(1)
         if not drama_name:
@@ -1026,7 +1026,7 @@ def register_handlers():
             return
         
         try:
-            success = await remove_anime_channel(drama_name)
+            success = await remove_drama_channel(drama_name)
             
             if success:
                 await safe_respond(
@@ -1047,14 +1047,14 @@ def register_handlers():
             await safe_respond(event, f"<blockquote><b>ᴇʀʀᴏʀ:</b> {str(e)}</blockquote>", parse_mode='html')
 
     @client.on(events.NewMessage(pattern='/listchnl'))
-    async def list_anime_channels_handler(event):
+    async def list_drama_channels_handler(event):
         if not is_admin(event.chat_id):
             return
         
-        from core.database import get_all_anime_channels
+        from core.database import get_all_drama_channels
         
         try:
-            channels = await get_all_anime_channels()
+            channels = await get_all_drama_channels()
             
             if not channels:
                 await safe_respond(
@@ -1509,19 +1509,19 @@ def register_handlers():
             await safe_edit(event, "<blockquote><b>ᴄᴀɴᴄᴇʟᴇᴅ, sᴇɴᴅ /sᴛᴀʀᴛ ᴛᴏ ʙᴇɢɪɴ ᴀɢᴀɪɴ!</b></blockquote>", parse_mode='html')
             return
         
-        if data.startswith('anime_'):
+        if data.startswith('drama_'):
             if not user_state.drama_results:
                 await safe_edit(event, "<blockquote><b>ᴇxᴘɪʀᴇᴅ, sᴇɴᴅ /sᴛᴀʀᴛ ᴛᴏ ʙᴇɢɪɴ ᴀɢᴀɪɴ!</b></blockquote>", parse_mode='html')
                 return
             
-            anime_index = int(data.split('_')[1])
-            if anime_index >= len(user_state.drama_results):
+            drama_index = int(data.split('_')[1])
+            if drama_index >= len(user_state.drama_results):
                 await safe_edit(event, "<blockquote><b>ɪɴᴠᴀʟɪᴅ, sᴇɴᴅ /sᴛᴀʀᴛ ᴛᴏ ʙᴇɢɪɴ ᴀɢᴀɪɴ!</b></blockquote>", parse_mode='html')
                 return
             
-            selected_anime = user_state.drama_results[anime_index]
-            drama_session = selected_anime['session']
-            drama_title = selected_anime['title']
+            selected_drama = user_state.drama_results[drama_index]
+            drama_session = selected_drama['session']
+            drama_title = selected_drama['title']
             
             if quality_settings.batch_mode:
                 await safe_edit(event,
@@ -1533,7 +1533,7 @@ def register_handlers():
                     f"<blockquote>≡ ᴘᴏᴡᴇʀᴇᴅ ʙʏ: <a href='t.me/{channel_format}'>{CHANNEL_NAME}</a></blockquote></b>",
                     parse_mode='html'
                 )
-                success = await download_anime_batch(event, drama_session, drama_title)
+                success = await download_drama_batch(event, drama_session, drama_title)
                 if success:
                     await safe_respond(event, f"<b>Batch download completed for:</b> <i>{drama_title}</i>", parse_mode='html')
                 else:
@@ -1542,7 +1542,7 @@ def register_handlers():
             
             user_state.drama_session = drama_session
             user_state.drama_title = drama_title
-            user_state.total_episodes = selected_anime['episodes']
+            user_state.total_episodes = selected_drama['episodes']
             
             await safe_edit(event,
                 f"<blockquote><b>✦ 𝗙𝗘𝗧𝗖𝗛𝗜𝗡𝗚 𝗘𝗣𝗜𝗦𝗢𝗗𝗘𝗦 ✦</blockquote>\n"
