@@ -132,7 +132,7 @@ FIXED_THUMBNAIL_URL = get_env_var(
 
 START_PIC_URL = get_env_var(
     "START_PIC_URL",
-    "https://graph.org/file/eb66e7c467c86c1e35621-da161d06cb706996c2.jpg",
+    "https://wallpapers.com/images/hd/drama-white-lbgo5w4pxnpg6ike.jpg",
     required=False
 )
 
